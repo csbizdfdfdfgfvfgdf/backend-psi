@@ -87,6 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		CorsConfiguration configAutenticacao = new CorsConfiguration();
 		configAutenticacao.setAllowCredentials(true);
 		configAutenticacao.addAllowedOrigin("*");
+		configAutenticacao.addAllowedHeader("Access-Control-Allow-Origin");
 		configAutenticacao.addAllowedHeader("X-Frame-Options");
 		configAutenticacao.addAllowedHeader("Authorization");
 		configAutenticacao.addAllowedHeader("Content-Type");
@@ -96,6 +97,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		configAutenticacao.addAllowedMethod("DELETE");
 		configAutenticacao.addAllowedMethod("PUT");
 		configAutenticacao.addAllowedMethod("OPTIONS");
+		configAutenticacao.addAllowedMethod("HEAD");
 		configAutenticacao.setMaxAge(3600L);
 		source.registerCorsConfiguration("/**", configAutenticacao);
 
