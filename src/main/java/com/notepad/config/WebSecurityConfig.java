@@ -78,4 +78,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// Add a filter to validate the tokens with every request
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
+	
+	
+	@Bean
+	public FilterRegistrationBean platformCorsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+		CorsConfiguration configAutenticacao = new CorsConfiguration();
+		configAutenticacao.setAllowCredentials(true);
+		configAutenticacao.addAllowedOrigin("*");
+		configAutenticacao.addAllowedHeader("X-Frame-Options");
+		configAutenticacao.addAllowedHeader("Authorization");
+		configAutenticacao.addAllowedHeader("Content-Type");
+		configAutenticacao.addAllowedHeader("Accept");
+		configAutenticacao.addAllowedMethod("POST");
+		configAutenticacao.addAllowedMethod("GET");
+		configAutenticacao.addAllowedMethod("DELETE");
+		configAutenticacao.addAllowedMethod("PUT");
+		configAutenticacao.addAllowedMethod("OPTIONS");
+		configAutenticacao.setMaxAge(3600L);
+		source.registerCorsConfiguration("/**", configAutenticacao);
+
+		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+		bean.setOrder(-110);
+		return bean;
+	}
 }
