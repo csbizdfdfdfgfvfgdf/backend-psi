@@ -2,11 +2,14 @@ package com.notepad.controller;
 
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -90,10 +93,14 @@ public class ItemController {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
 	@DeleteMapping("/api/menu/delItem/{itemId}")
-	public ResponseEntity<String> deleteItem(@PathVariable Long itemId) {
+	public ResponseEntity<Map<String, String>> deleteItem(@PathVariable Long itemId) {
 		log.info("Rest request to delete Item with id: {}", itemId);
 		itemService.delete(itemId);
-		return ResponseEntity.noContent().build();
+		
+		Map<String, String> map = new HashMap<>();
+	    map.put("message","Note deleted successfully");
+		
+	    return ResponseEntity.status(HttpStatus.OK).body(map);
 	}
 	
 }
