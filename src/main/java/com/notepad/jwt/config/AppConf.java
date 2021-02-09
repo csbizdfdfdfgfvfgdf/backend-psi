@@ -10,6 +10,7 @@ public class AppConf implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
+                .allowedHeaders("*")
                 .allowedOrigins("http://localhost:4202",
                         "http://ppssii.com",
                         "https://apis.ppssii.com",
