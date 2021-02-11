@@ -1,7 +1,5 @@
 package com.notepad.config;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.notepad.jwt.config.JwtAuthenticationEntryPoint;
 import com.notepad.jwt.config.JwtRequestFilter;
@@ -36,6 +34,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private JwtRequestFilter jwtRequestFilter;
+	
+	//@Autowired
+	//private CorsFilter corsFilter;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -59,8 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		// We don't need CSRF for this example
-		httpSecurity.csrf().disable()
-				// dont authenticate this particular request
+		httpSecurity.cors().and().csrf().disable()
 				.authorizeRequests().antMatchers(
 						"/authenticate", 
 						"/register","/ws", "/test", "/auth/makeUuid", "/auth/retrievePwd", "/auth/resetPwd", "/redis-users/**",
@@ -80,6 +80,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.invalidateHttpSession(true);
 
 		// Add a filter to validate the tokens with every request
+		
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		//httpSecurity.addFilter(corsFilter);
 	}
+	
+	@Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source =
+            new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new org.springframework.web.filter.CorsFilter(source);
+    }
 }
