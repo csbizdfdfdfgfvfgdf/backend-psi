@@ -12,6 +12,7 @@ public class AppConf implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:4202",
                         "http://ppssii.com",
+                        "https://ppssii.com",
                         "https://apis.ppssii.com",
                         "http://apis.ppssii.com",
                         "http://www.ppssii.com",
