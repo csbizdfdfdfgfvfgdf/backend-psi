@@ -1,20 +1,19 @@
 package com.notepad.filter;
 
 import java.io.IOException;
-import javax.servlet.Filter;
+
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
-public class CorsFilter implements Filter {
+
+public class CorsFilter extends OncePerRequestFilter {
 
 	private final Logger log = LoggerFactory.getLogger(CorsFilter.class);
 
@@ -23,8 +22,9 @@ public class CorsFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-
+	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
+			throws ServletException, IOException {
+		log.info("Inside filter");
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 
@@ -34,15 +34,7 @@ public class CorsFilter implements Filter {
 		response.setHeader("Access-Control-Max-Age", "3600");
 		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
 
-		chain.doFilter(req, res);
-	}
-
-	@Override
-	public void init(FilterConfig filterConfig) {
-	}
-
-	@Override
-	public void destroy() {
+		filterChain.doFilter(req, res);
 	}
 
 }
