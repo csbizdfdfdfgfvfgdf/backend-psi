@@ -44,7 +44,7 @@ public class MenuController {
 	@GetMapping("/test")
 	public String testMethod() {
 		log.info("logging is working fine!");
-		return "notepad app is working.";
+		return "notepad app is working. 1";
 	}
 	
 	/**
