@@ -14,13 +14,13 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	List<Item> findAllByMenu(Menu menu);
 
-//	List<Item> findAllByMenuOrderByzIndex(Menu menu);
+//	List<Item> findAllByMenuOrderByOrderId(Menu menu);
 	
-//	List<Item> findAllByMenuOrderByZIndex(Menu menu);
+//	List<Item> findAllByMenuOrderByOrderId(Menu menu);
 
-	List<Item> findAllByMenuOrderByZindex(Menu menu);
+	List<Item> findAllByMenuOrderByOrderId(Menu menu);
 
-//	List<Item> findAllByUserOrderByZindex(User user);
+//	List<Item> findAllByUserOrderByOrderId(User user);
 
 	List<Item> findAllByUserAndMenu(User user,Menu menu);
 

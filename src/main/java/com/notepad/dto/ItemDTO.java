@@ -12,7 +12,7 @@ public class ItemDTO implements Serializable {
 	
 	private Long itemId;
 	private String content;
-	private Integer zindex;
+	private Integer orderId;
 	
 	private Long uId;
 	private String userName;
@@ -38,12 +38,12 @@ public class ItemDTO implements Serializable {
 		this.content = content;
 	}
 	
-	public Integer getZindex() {
-		return zindex;
+	public Integer getOrderId() {
+		return orderId;
 	}
 
-	public void setZindex(Integer zindex) {
-		this.zindex = zindex;
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
 	}
 
 	public Long getuId() {
@@ -88,7 +88,7 @@ public class ItemDTO implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "ItemDTO [itemId=" + itemId + ", content=" + content + ", zindex=" + zindex + ", uId=" + uId
+		return "ItemDTO [itemId=" + itemId + ", content=" + content + ", orderId=" + orderId + ", uId=" + uId
 				+ ", userName=" + userName + ", pId=" + pId + ", created=" + created + ", updated=" + updated + "]";
 	}
 	

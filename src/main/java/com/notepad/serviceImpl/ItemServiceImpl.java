@@ -63,42 +63,42 @@ public class ItemServiceImpl implements ItemService {
 				throw new BadRequestAlertException("Content and parentId must not be null", "Item", null);
 			}
 
-			// set zIndex
+			// set order
 
-			if (itemDTO.getZindex() != null) { // check if zIndex presents in requestBody
+			if (itemDTO.getOrderId() != null) { // check if order presents in requestBody
 				// if yes, then do relevant changes
 
 				List<Item> items = new ArrayList<>();
 
-				// 1) get Items by the pId of item to be stored --> sortedByZIndex
+				// 1) get Items by the pId of item to be stored --> sortedByOrder
 
 				Long pId = itemDTO.getpId();
 
 				// get all items with pId
 				Optional<Menu> parentMenu = menuRepository.findById(pId);
 				if (parentMenu != null) {
-					items = itemRepository.findAllByMenuOrderByZindex(parentMenu.get());
+					items = itemRepository.findAllByMenuOrderByOrderId(parentMenu.get());
 				}
 
 				if (!items.isEmpty()) {
 
 					for (Item existingItem : items) {
-						if (existingItem.getZindex() < itemDTO.getZindex()) {
-							// 1.2) if Items (sortedByZIndex) exist, then iterate until items'
-							// existingItemZIndex < newItemZIndex
+						if (existingItem.getOrderId() < itemDTO.getOrderId()) {
+							// 1.2) if Items (sortedByOrder) exist, then iterate until items'
+							// existingItemOder < newItemOrder
 							continue;
 						} else {
-							// 1.2.1) then make zIndex+1 for remaining Items
-							existingItem.setZindex(existingItem.getZindex() + 1);
+							// 1.2.1) then make oder+1 for remaining Items
+							existingItem.setOrderId(existingItem.getOrderId() + 1);
 						}
 					}
 
-					// 1.2.2) setNewItemZIndex as per requestBody
-					itemDTO.setZindex(itemDTO.getZindex());
+					// 1.2.2) setNewItemOder as per requestBody
+					itemDTO.setOrderId(itemDTO.getOrderId());
 
 				}
 
-			} else { // if not then to assign last zIndex --> follow the steps below!
+			} else { // if not then to assign last order --> follow the steps below!
 
 				List<Item> items = new ArrayList<>();
 
@@ -110,18 +110,18 @@ public class ItemServiceImpl implements ItemService {
 				if(pId != null){
 					Optional<Menu> parentMenu = menuRepository.findById(pId);
 					if (parentMenu != null) {
-						items = itemRepository.findAllByMenuOrderByZindex(parentMenu.get());
+						items = itemRepository.findAllByMenuOrderByOrderId(parentMenu.get());
 					}
 				}
 				if (items.isEmpty()) {
-					// 1.1) if Items do not exist, then set the first zIndex as 0
-					itemDTO.setZindex(0);
+					// 1.1) if Items do not exist, then set the first order as 0
+					itemDTO.setOrderId(0);
 				} else {
-					// 1.2) if exists, then get item with maxZIndex
+					// 1.2) if exists, then get item with maxOrder
 					Item lastIndexedItem = items.get(items.size() - 1);
 
-					// 1.2.1) set maxZIndex+1 to the zIndex of item to be stored
-					itemDTO.setZindex(lastIndexedItem.getZindex() + 1);
+					// 1.2.1) set maxOrder+1 to the order of item to be stored
+					itemDTO.setOrderId(lastIndexedItem.getOrderId() + 1);
 				}
 
 			}
@@ -154,7 +154,7 @@ public class ItemServiceImpl implements ItemService {
 //					// get all items with old-pId
 //					Optional<Menu> oldParentMenu = menuRepository.findById(oldPId);
 //					if (oldParentMenu != null) {
-//						oldItems = itemRepository.findAllByMenuOrderByZindex(oldParentMenu.get());
+//						oldItems = itemRepository.findAllByMenuOrderByOrder(oldParentMenu.get());
 //					}
 //					if (oldItems.size() > 1) {
 //						for (Item existingItem1 : oldItems) {
@@ -162,10 +162,10 @@ public class ItemServiceImpl implements ItemService {
 //									&& existingItem1.getItemId().equals(existingItem.getItemId())) {
 //								continue;
 //							}
-//							if (existingItem1.getZindex() < existingItem.getZindex()) {
+//							if (existingItem1.getOrder() < existingItem.getOrder()) {
 //								continue;
 //							} else {
-//								existingItem1.setZindex(existingItem1.getZindex() - 1);
+//								existingItem1.setOrder(existingItem1.getOrder() - 1);
 //							}
 //						}
 //					}
@@ -192,42 +192,42 @@ public class ItemServiceImpl implements ItemService {
 					// get all items with pId
 					Optional<Menu> parentMenu = menuRepository.findById(pId);
 					if (parentMenu != null) {
-						items = itemRepository.findAllByMenuOrderByZindex(parentMenu.get());
+						items = itemRepository.findAllByMenuOrderByOrderId(parentMenu.get());
 					}
 
 					if (items.isEmpty()) {
-						// 1.1) if Items do not exist, then set the first zIndex as 0
-						existingItem.setZindex(0);
+						// 1.1) if Items do not exist, then set the first order as 0
+						existingItem.setOrderId(0);
 					} else {
-						// 1.2) if exists, then get item with maxZIndex
+						// 1.2) if exists, then get item with maxOrder
 						Item lastIndexedItem = items.get(items.size() - 1);
 
-						// 1.2.1) set maxZIndex+1 to the zIndex of item to be stored
-						existingItem.setZindex(lastIndexedItem.getZindex() + 1);
+						// 1.2.1) set maxOrder+1 to the order of item to be stored
+						existingItem.setOrderId(lastIndexedItem.getOrderId() + 1);
 					}
 					
 				}
 				
 				// to update z-index
 
-				if (itemDTO.getZindex() != null) { // check if zIndex presents in requestBody
+				if (itemDTO.getOrderId() != null) { // check if order presents in requestBody
 					// if yes, then do relevant changes
 
 					List<Item> items = new ArrayList<>();
 
-					// 1) get Items by the pId of item to be stored --> sortedByZIndex
+					// 1) get Items by the pId of item to be stored --> sortedByOrder
 
 					Long pId = itemDTO.getpId();
 
 					// get all items with pId
 					Optional<Menu> parentMenu = menuRepository.findById(pId);
 					if (parentMenu != null) {
-						items = itemRepository.findAllByMenuOrderByZindex(parentMenu.get());
+						items = itemRepository.findAllByMenuOrderByOrderId(parentMenu.get());
 					}
 
 					if (items.isEmpty()) {
 						// 1.1) if items do not exist, then set the first orderId as per requestBody
-						existingItem.setZindex(itemDTO.getZindex());
+						existingItem.setOrderId(itemDTO.getOrderId());
 					}
 					if (!items.isEmpty()) {
 
@@ -237,18 +237,18 @@ public class ItemServiceImpl implements ItemService {
 								// skip for item itself
 								continue;
 							}
-							if (existingItem1.getZindex() < itemDTO.getZindex()) {
-								// 1.2) if Items (sortedByZIndex) exist, then iterate until items'
-								// existingItemZIndex < newItemZIndex
+							if (existingItem1.getOrderId() < itemDTO.getOrderId()) {
+								// 1.2) if Items (sortedByOrder) exist, then iterate until items'
+								// existingItemOrder < newItemOrder
 								continue;
 							} else {
-								// 1.2.1) then make zIndex+1 for remaining Items
-								existingItem1.setZindex(existingItem1.getZindex() + 1);
+								// 1.2.1) then make order+1 for remaining Items
+								existingItem1.setOrderId(existingItem1.getOrderId() + 1);
 							}
 						}
 
-						// 1.2.2) setNewItemZIndex as per requestBody
-						existingItem.setZindex(itemDTO.getZindex());
+						// 1.2.2) setNewItemOrder as per requestBody
+						existingItem.setOrderId(itemDTO.getOrderId());
 					}
 				}
 
@@ -282,7 +282,7 @@ public class ItemServiceImpl implements ItemService {
 		log.info("Request to find all items with menuId : {} ", menuId);
 		List<ItemDTO> itemDTOs = new ArrayList<>();
 		menuRepository.findById(menuId).ifPresent(menu -> {
-			List<Item> items = itemRepository.findAllByMenuOrderByZindex(menu);
+			List<Item> items = itemRepository.findAllByMenuOrderByOrderId(menu);
 			if (!items.isEmpty()) {
 				items.forEach(item -> {
 					itemDTOs.add(itemMapper.toDTO(item));

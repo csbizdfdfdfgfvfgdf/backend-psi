@@ -27,7 +27,7 @@ public class Item implements Serializable {
 	@GeneratedValue
 	private Long itemId;
 	private String content;
-	private Integer zindex;
+	private Integer orderId;
 	
 //	@ManyToOne
 //	@JoinColumn(name = "uid")
@@ -98,12 +98,12 @@ public class Item implements Serializable {
 		this.menu = menu;
 	}
 
-	public Integer getZindex() {
-		return zindex;
+	public Integer getOrderId() {
+		return orderId;
 	}
 
-	public void setZindex(Integer zindex) {
-		this.zindex = zindex;
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
 	}
 
 	public User getUser() {
@@ -116,7 +116,7 @@ public class Item implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Item [itemId=" + itemId + ", content=" + content + ", zindex=" + zindex + ", user=" + user + ", menu="
+		return "Item [itemId=" + itemId + ", content=" + content + ", orderId=" + orderId + ", user=" + user + ", menu="
 				+ menu + ", created=" + created + ", updated=" + updated + "]";
 	}
 
