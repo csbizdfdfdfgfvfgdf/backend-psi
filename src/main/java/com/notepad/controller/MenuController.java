@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.notepad.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.notepad.dto.MenuDTO;
 import com.notepad.entity.Menu;
+import com.notepad.entity.User;
 import com.notepad.service.MenuService;
 
 /**
@@ -44,7 +43,7 @@ public class MenuController {
 	@GetMapping("/test")
 	public String testMethod() {
 		log.info("logging is working fine!");
-		return "notepad app is working..";
+		return "notepad app is working. 2";
 	}
 	
 	/**
