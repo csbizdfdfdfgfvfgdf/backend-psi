@@ -1,5 +1,7 @@
 package com.notepad.config;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -87,7 +89,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://ppssii.com");
+        config.setAllowedOrigins(Arrays.asList(
+        		"https://ppssii.com", 
+        		"https://localhost:4200", 
+        		"http://localhost:4200", 
+        		"http://52.88.158.96:4200",
+        		"https://52.88.158.96:4200"));
+        //config.addAllowedOrigin("https://ppssii.com");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
