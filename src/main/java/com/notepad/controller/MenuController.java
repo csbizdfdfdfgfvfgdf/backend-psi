@@ -28,11 +28,15 @@ import com.notepad.entity.Menu;
 import com.notepad.entity.User;
 import com.notepad.service.MenuService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * REST controller for managing {@link Menu}
  */
 @RestController
 @CrossOrigin
+@Api(value="Folders", description="Operations pertaining to folders")
 public class MenuController {
 	
 	private final Logger log = LoggerFactory.getLogger(MenuController.class);
@@ -53,6 +57,8 @@ public class MenuController {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new menuDTO.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+	@ApiOperation(value = "Adds a folder with or without pId (parent folder id) and orderId for sorting folder, "
+			+ "copy functionality for duplicating folder")
 	@PostMapping("/api/menu/addMenu")
 	public ResponseEntity<MenuDTO> saveMenu(@RequestBody MenuDTO menuDTO, Principal principal) {
 		log.info("Rest request to save Menu: {}", menuDTO);
@@ -67,6 +73,8 @@ public class MenuController {
      * or with status {@code 400 (Bad Request)} if the menuDTO is not valid,
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+	@ApiOperation(value = "Updates a folder name, its sorting by orderId, cut/paste functionality for sorting folder"
+			+ " or changing parent folder")
 	@PutMapping("/api/menu/updateMenu")
 	public ResponseEntity<MenuDTO> updateMenu(@RequestBody MenuDTO menuDTO, Principal principal) {
 		log.info("Rest request to update Menu: {}", menuDTO);
@@ -91,6 +99,7 @@ public class MenuController {
      * {@code GET  /menus} : get all the menus by logged in user.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of menus in body.
      */
+	@ApiOperation(value = "Returns all folders by logged in user")
 	@GetMapping("/menus")
 	public ResponseEntity<List<MenuDTO>> getAllMenusByUser(Principal principal) {
 		log.info("Rest request to get all Menus(Folders)");
@@ -104,6 +113,7 @@ public class MenuController {
      * @param menuId : is a parentId
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of menus in body.
      */
+	@ApiOperation(value = "Returns all folders by parent folder id (menuId) and logged in user")
 	@GetMapping("/menus/{menuId}")
 	public ResponseEntity<List<MenuDTO>> getAllMenusByParentMenuAndUser(@PathVariable Long menuId, Principal principal) {
 		log.info("Rest request to get all Menus(Folders)");
@@ -119,6 +129,7 @@ public class MenuController {
      * @param principal the logged in user.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+	@ApiOperation(value = "Deletes a menu by id for logged in user")
 	@DeleteMapping("api/menu/delMenu/{menuId}")
 	public ResponseEntity<Map<String, String>> deleteMenuByIdAndUser(@PathVariable Long menuId, Principal principal) {
 		log.info("Rest request to delete Menu with id: {}", menuId);

@@ -27,11 +27,18 @@ import com.notepad.repository.UserRepository;
 import com.notepad.service.MailService;
 import com.notepad.service.UserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * REST controller for managing {@link User}
  */
 @RestController
 @CrossOrigin
+@Api(value="Users", description="Operations pertaining to users")
+@ApiImplicitParams({})
 public class UserController {
 
 	private final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -51,6 +58,7 @@ public class UserController {
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
 	 *         logged in userDTO.
 	 */
+	@ApiOperation(value = "Authenticate by returning user by token")
 	@GetMapping("/auth/me")
 	public ResponseEntity<UserDTO> getLoggedInUser(Principal principal) {
 		log.info("Rest request to get information of logged in user by token!");
@@ -64,6 +72,10 @@ public class UserController {
 	 * 
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the UUID.
 	 */
+	@ApiOperation(value = "Creates a user by new generating and returning UUID that is further used in header "
+			+ "with all calls to authenticate user")
+//	@ApiImplicitParams({})
+	@ApiImplicitParams(@ApiImplicitParam(name = "uuid"))
 	@GetMapping("auth/makeUuid")
 	public ResponseEntity<String> getUUID() {
 		log.info("Rest request to generate random UUID.");
@@ -86,6 +98,7 @@ public class UserController {
 	 *         of users in body.
 	 */
 	@GetMapping("/users")
+	@ApiOperation(value = "Returns list of all users")
 	public ResponseEntity<List<UserDTO>> getAllUsers() {
 		log.info("Rest request to get all users");
 		List<UserDTO> userDTOs = userService.findAll();
@@ -101,6 +114,7 @@ public class UserController {
 	 *         & sent to user.
 	 * @throws URISyntaxException if the Location URI syntax is incorrect.
 	 */
+	@ApiOperation(value = "Sends a reset password link to the provided user email id")
 	@PostMapping("/auth/retrievePwd")
 	public ResponseEntity<String> retrivePasswordSendMail(@RequestBody UserDTO userDTO, HttpServletRequest request) {
 		log.info("Rest request to send mail on {} ", userDTO.getEmail());
@@ -140,6 +154,7 @@ public class UserController {
 	 * @return the {@link ResponseEntity} with status {@code 200} and return the updated user entity.
 	 * @throws URISyntaxException if the Location URI syntax is incorrect.
 	 */
+	@ApiOperation(value = "Validates the token sent with reset password link and changes the password")
 	@PostMapping("/auth/resetPwd")
 	public ResponseEntity<String> validateTokenAndResetPassword(@RequestBody TokenAndPasswordDTO tokenAndPasswordDTO) {
 		log.info("Rest request to validate token and reset password");

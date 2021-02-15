@@ -3,6 +3,8 @@ package com.notepad.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class ItemDTO implements Serializable {
 
 	/**
@@ -10,16 +12,24 @@ public class ItemDTO implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	@ApiModelProperty(value = "The database generated note ID")
 	private Long itemId;
+	@ApiModelProperty(value = "The content of a note")
 	private String content;
+	@ApiModelProperty(value = "The order id for the sorting of notes")
 	private Integer orderId;
 	
+	@ApiModelProperty(value = "The id of the assigned user")
 	private Long uId;
+	@ApiModelProperty(value = "The name of the assigned user")
 	private String userName;
 	
+	@ApiModelProperty(value = "The parent folder id of a note")
 	private Long pId; // pId = parentId
 	
+	@ApiModelProperty(value = "The created date of a note")
 	private LocalDateTime created;
+	@ApiModelProperty(value = "The updated date of a note")
 	private LocalDateTime updated;
 	
 	public Long getItemId() {

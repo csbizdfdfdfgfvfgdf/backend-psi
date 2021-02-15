@@ -7,7 +7,7 @@ import com.notepad.dto.ItemDTO;
 
 public interface ItemService {
 
-	ItemDTO save(ItemDTO itemDTO, Principal principal);
+	List<ItemDTO> save(List<ItemDTO> itemDTO, Principal principal);
 
 	void delete(Long itemId);
 

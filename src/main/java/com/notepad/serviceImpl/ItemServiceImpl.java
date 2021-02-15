@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import com.notepad.dto.ItemDTO;
@@ -46,11 +47,69 @@ public class ItemServiceImpl implements ItemService {
 	 * 
 	 */
 	@Override
-	public ItemDTO save(ItemDTO itemDTO, Principal principal) {
-		log.info("Request to create item : {} ", itemDTO);
+	public List<ItemDTO> save(List<ItemDTO> itemDTOs, Principal principal) {
+		log.info("Request to create item : {} ", itemDTOs);
 
+		List<ItemDTO> newItems = new ArrayList<ItemDTO>();
+		
+		for (ItemDTO itemDTO: itemDTOs) {
+			
+			// to create item
+			
+			if (itemDTO.getItemId() == null) {
+				User user = userRepository.findByUserName(principal.getName());
+				if (user != null) {
+					// set user to item
+					itemDTO.setuId(user.getUserId());
+					itemDTO.setUserName(user.getUserName());
+				}
+
+				if (itemDTO.getpId() == null && itemDTO.getContent() == null) {
+					throw new BadRequestAlertException("Content and parentId must not be null", "Item", null);
+				}
+				
+				Item newItem = itemMapper.toEntity(itemDTO);
+				if(newItem.getMenu().getMenuId()==null){
+					newItem.setMenu(null);
+				}
+				Item item = itemRepository.save(newItem);
+				newItems.add(itemMapper.toDTO(item));
+				
+			} else {
+				// to update item
+				
+				Optional<Item> itemToUpdate = itemRepository.findById(itemDTO.getItemId());
+				
+				itemToUpdate.ifPresent(existingItem -> {
+					if (itemDTO.getContent() != null) {
+						existingItem.setContent(itemDTO.getContent());
+					}
+					
+					// to update parent menu id
+					if (existingItem.getMenu().getMenuId() != itemDTO.getpId()) {
+						// get MenuBy menuDTO.getpId()
+						
+						Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
+						if (menuOp.isPresent()) {
+							// set this menu to existing item
+							existingItem.setMenu(menuOp.get());
+						}
+					}
+					
+					existingItem.setOrderId(itemDTO.getOrderId());
+				});
+				
+				Item updatedItem = itemRepository.save(itemToUpdate.get());
+				newItems.add(itemMapper.toDTO(updatedItem));
+			}
+		}
+		
+		return newItems;
+		
 		// to create item
 
+		/*
+		
 		if (itemDTO.getItemId() == null) {
 			User user = userRepository.findByUserName(principal.getName());
 			if (user != null) {
@@ -257,6 +316,8 @@ public class ItemServiceImpl implements ItemService {
 			Item updatedItem = itemRepository.save(item.get());
 			return itemMapper.toDTO(updatedItem);
 		}
+		
+		*/
 
 	}
 

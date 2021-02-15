@@ -2,6 +2,8 @@ package com.notepad.dto;
 
 import java.io.Serializable;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class MenuDTO implements Serializable {
 
 	/**
@@ -9,14 +11,21 @@ public class MenuDTO implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@ApiModelProperty(value = "The database generated folder ID")
 	private Long menuId;
+	@ApiModelProperty(value = "The name of the folder")
 	private String menuName;
+	@ApiModelProperty(value = "The order id for sorting the folder")
 	private Integer orderId;
+	@ApiModelProperty(value = "The type of the assigned user")
 	private Integer userType;
 	
+	@ApiModelProperty(value = "The id of the assigned user")
 	private Long uId;
+	@ApiModelProperty(value = "The name of the assigned user")
 	private String userName;
 	
+	@ApiModelProperty(value = "The parent id of a folder")
 	private Long pId; // pId = parentId
 
 	public Long getMenuId() {

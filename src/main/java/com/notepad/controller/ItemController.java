@@ -25,9 +25,14 @@ import com.notepad.dto.ItemDTO;
 import com.notepad.entity.Item;
 import com.notepad.service.ItemService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * REST controller for managing {@link Item}
  */
+@Api(value="Notes", description="Operations pertaining to notes")
 @RestController
 //@RequestMapping("/api")
 @CrossOrigin
@@ -45,8 +50,10 @@ public class ItemController {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new itemDTO.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+	@ApiOperation(value = "Adds a note under a folder with pId and orderId for sorting note, copy functionality for "
+			+ "duplicating note")
 	@PostMapping("/api/menu/addItem")
-	public ResponseEntity<ItemDTO> saveItem(@RequestBody ItemDTO itemDTO, Principal principal) {
+	public ResponseEntity<List<ItemDTO>> saveItem(@RequestBody List<ItemDTO> itemDTO, Principal principal) {
 		log.info("Rest request to save Item: {}", itemDTO);
 		return ResponseEntity.ok().body(itemService.save(itemDTO, principal));
 	}
@@ -59,13 +66,17 @@ public class ItemController {
      * or with status {@code 400 (Bad Request)} if the itemDTO is not valid,
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+	@ApiOperation(value = "Updates a note content, its sorting by orderId, cut/paste functionality for sorting or changing"
+			+ "parent folder")
 	@PutMapping("/api/menu/updateItem")
-	public ResponseEntity<ItemDTO> updateItem(@RequestBody ItemDTO itemDTO, Principal principal) {
-		log.info("Rest request to update Item: {}", itemDTO);
-		if(itemDTO.getItemId() == null) {
-			throw new BadCredentialsException("itemId should not be null");
+	public ResponseEntity<List<ItemDTO>> updateItem(@RequestBody List<ItemDTO> itemDTOs, Principal principal) {
+		log.info("Rest request to update Item: {}", itemDTOs);
+		for (ItemDTO itemDTO: itemDTOs) {
+			if(itemDTO.getItemId() == null) {
+				throw new BadCredentialsException("itemId should not be null");
+			}
 		}
-		return ResponseEntity.ok().body(itemService.save(itemDTO, principal));
+		return ResponseEntity.ok().body(itemService.save(itemDTOs, principal));
 	}
 	
 	/**
@@ -73,6 +84,7 @@ public class ItemController {
      * @param menuId to get all the items inside this "menuId" menu
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of menus in body.
      */
+	@ApiOperation(value = "Returns all notes within a folder by menuId")
 	@GetMapping("/api/menu/menuItem/{menuId}")
 	public ResponseEntity<List<ItemDTO>> getAllItemsByMenu(@PathVariable Long menuId) {
 		log.info("Rest request to get all Items from menu with menuId : {}", menuId);
@@ -80,6 +92,7 @@ public class ItemController {
 		return ResponseEntity.ok().body(itemDTOs);
 	}
 
+	@ApiOperation(value = "Returns all notes by user id")
 	@GetMapping("/api/menu/menuItemByUser")
 	public ResponseEntity<List<ItemDTO>> getAllItemsByUserId(Principal principal) {
 		log.info("Rest request to get all Items from menu with userId : {}");
@@ -92,6 +105,7 @@ public class ItemController {
      * @param itemId the id of the item to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+	@ApiOperation(value = "Deletes a note by itemId")
 	@DeleteMapping("/api/menu/delItem/{itemId}")
 	public ResponseEntity<Map<String, String>> deleteItem(@PathVariable Long itemId) {
 		log.info("Rest request to delete Item with id: {}", itemId);
