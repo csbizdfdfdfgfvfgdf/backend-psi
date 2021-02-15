@@ -90,6 +90,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList(
+        		"https://www.ppssii.com",
         		"https://ppssii.com", 
         		"https://localhost:4200", 
         		"http://localhost:4200", 
