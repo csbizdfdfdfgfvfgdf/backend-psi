@@ -9,7 +9,7 @@ public interface MenuService {
 
 //	List<MenuDTO> findAll();
 
-	MenuDTO save(MenuDTO menuDTO, Principal principal);
+	List<MenuDTO> save(List<MenuDTO> menuDTO, Principal principal);
 
 	void delete(Long menuId, Principal principal);
 

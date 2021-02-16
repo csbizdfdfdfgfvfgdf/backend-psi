@@ -60,9 +60,9 @@ public class MenuController {
 	@ApiOperation(value = "Adds a folder with or without pId (parent folder id) and orderId for sorting folder, "
 			+ "copy functionality for duplicating folder")
 	@PostMapping("/api/menu/addMenu")
-	public ResponseEntity<MenuDTO> saveMenu(@RequestBody MenuDTO menuDTO, Principal principal) {
-		log.info("Rest request to save Menu: {}", menuDTO);
-		return ResponseEntity.ok().body(menuService.save(menuDTO, principal));
+	public ResponseEntity<List<MenuDTO>> saveMenu(@RequestBody List<MenuDTO> menuDTOs, Principal principal) {
+		log.info("Rest request to save Menu: {}", menuDTOs);
+		return ResponseEntity.ok().body(menuService.save(menuDTOs, principal));
 	}
 
 	/**
@@ -76,12 +76,15 @@ public class MenuController {
 	@ApiOperation(value = "Updates a folder name, its sorting by orderId, cut/paste functionality for sorting folder"
 			+ " or changing parent folder")
 	@PutMapping("/api/menu/updateMenu")
-	public ResponseEntity<MenuDTO> updateMenu(@RequestBody MenuDTO menuDTO, Principal principal) {
-		log.info("Rest request to update Menu: {}", menuDTO);
-		if(menuDTO.getMenuId() == null) {
-			throw new BadCredentialsException("menuId should not be null");
+	public ResponseEntity<List<MenuDTO>> updateMenu(@RequestBody List<MenuDTO> menuDTOs, Principal principal) {
+		log.info("Rest request to update Menu: {}", menuDTOs);
+		
+		for (MenuDTO menuDTO: menuDTOs) {
+			if(menuDTO.getMenuId() == null) {
+				throw new BadCredentialsException("menuId should not be null");
+			}
 		}
-		return ResponseEntity.ok().body(menuService.save(menuDTO, principal));
+		return ResponseEntity.ok().body(menuService.save(menuDTOs, principal));
 	}
 	
 //	/**
