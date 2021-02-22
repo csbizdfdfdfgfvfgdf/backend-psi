@@ -141,19 +141,6 @@ public class MenuController {
 	    return ResponseEntity.status(HttpStatus.OK).body(map);
 	}
 	
-//	/**
-//     * {@code DELETE  /delMenu/:userId} : delete menu with "userId".
-//     *
-//     * @param userId the id of the menu to delete.
-//     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-//     */
-//	@DeleteMapping("/delMenu")
-//	public ResponseEntity<String> deleteMenuByLoggedInUser(Principal principal) {
-//		log.info("Rest request to delete Menu by logged in user");
-//		menuService.deleteByUser(principal);
-//		return ResponseEntity.ok().body("Menu(folder) deleted successfully!");
-//	}
-
 	@MessageMapping("/hello")
 	@SendTo("/topic/greetings")
 	public ResponseEntity<String> greeting(User user) throws Exception {

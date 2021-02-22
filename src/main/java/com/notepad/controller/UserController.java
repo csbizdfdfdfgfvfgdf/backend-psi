@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.notepad.entity.enumeration.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +18,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.notepad.dto.ResponseDto;
 import com.notepad.dto.TokenAndPasswordDTO;
 import com.notepad.dto.UserDTO;
 import com.notepad.entity.User;
+import com.notepad.entity.enumeration.UserType;
 import com.notepad.error.BadRequestAlertException;
 import com.notepad.repository.UserRepository;
 import com.notepad.service.MailService;
 import com.notepad.service.UserService;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -77,7 +78,7 @@ public class UserController {
 //	@ApiImplicitParams({})
 	@ApiImplicitParams(@ApiImplicitParam(name = "uuid"))
 	@GetMapping("auth/makeUuid")
-	public ResponseEntity<String> getUUID() {
+	public ResponseEntity<ResponseDto> getUUID() {
 		log.info("Rest request to generate random UUID.");
 		String uuid = UUID.randomUUID().toString();
 		UserDTO userDTORes = new UserDTO();
@@ -88,7 +89,10 @@ public class UserController {
 		userDTO.setUserType(UserType.VISITOR);
 		userDTO.setEmail(uuid+"@gmail.com");
 		userDTORes = userService.save(userDTO);
-		return ResponseEntity.ok().body(uuid);
+		return ResponseEntity.ok().body(
+				ResponseDto.builder()
+				.status("success")
+				.data(uuid).build());
 	}
 
 	/**
@@ -116,7 +120,7 @@ public class UserController {
 	 */
 	@ApiOperation(value = "Sends a reset password link to the provided user email id")
 	@PostMapping("/auth/retrievePwd")
-	public ResponseEntity<String> retrivePasswordSendMail(@RequestBody UserDTO userDTO, HttpServletRequest request) {
+	public ResponseEntity<ResponseDto> retrivePasswordSendMail(@RequestBody UserDTO userDTO, HttpServletRequest request) {
 		log.info("Rest request to send mail on {} ", userDTO.getEmail());
 		// check if user with email present or not?
 		Optional<User> user = userRepository.findOneByEmail(userDTO.getEmail().toLowerCase());
@@ -144,7 +148,11 @@ public class UserController {
 
 		}
 
-		return ResponseEntity.ok().body("mail sent succesfully to " + user.get().getEmail());
+		return ResponseEntity.ok().body(
+				ResponseDto.builder()
+				.status("success")
+				.data("mail sent succesfully to " + user.get().getEmail()).build()
+				);
 	}
 	
 	/**
@@ -156,10 +164,14 @@ public class UserController {
 	 */
 	@ApiOperation(value = "Validates the token sent with reset password link and changes the password")
 	@PostMapping("/auth/resetPwd")
-	public ResponseEntity<String> validateTokenAndResetPassword(@RequestBody TokenAndPasswordDTO tokenAndPasswordDTO) {
+	public ResponseEntity<ResponseDto> validateTokenAndResetPassword(@RequestBody TokenAndPasswordDTO tokenAndPasswordDTO) {
 		log.info("Rest request to validate token and reset password");
 		userService.resetPassword(tokenAndPasswordDTO);
-		return ResponseEntity.ok().body("");
+		return ResponseEntity.ok().body(
+				ResponseDto.builder()
+				.status("success")
+				.data("").build()
+				);
 	}
 	
 }

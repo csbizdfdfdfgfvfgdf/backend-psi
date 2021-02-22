@@ -52,7 +52,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-	
+
 		<!-- Dependencies for Redis -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -62,7 +62,7 @@
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 		</dependency>
-		
+
 		<!-- Dependencies for Swagger -->
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -111,7 +111,7 @@
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf-spring5</artifactId>
 		</dependency>
-		
+
 		<!-- Dependencies for mailing service -->
 		<dependency>
 			<groupId>javax.mail</groupId>
@@ -122,12 +122,15 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
 		</dependency>
-		<!--web-socket implementations-->
+		<!--web-socket implementations -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
 	</dependencies>
 
 
