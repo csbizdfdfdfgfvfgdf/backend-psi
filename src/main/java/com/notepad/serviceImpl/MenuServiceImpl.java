@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.notepad.dto.ItemDTO;
 import com.notepad.dto.MenuDTO;
 import com.notepad.entity.Item;
 import com.notepad.entity.Menu;
@@ -100,227 +101,81 @@ public class MenuServiceImpl implements MenuService {
 	 * 
 	 */
 	@Override
-	public MenuDTO save(MenuDTO menuDTO, Principal principal) {
-		log.info("Request to create/ update menu : {} ", menuDTO);
+	public List<MenuDTO> save(List<MenuDTO> menuDTOs, Principal principal) {
+		log.info("Request to create/ update menu : {} ", menuDTOs);
 
-		// to create menu, rather is to update
-		if (menuDTO.getMenuId() == null) {
-			User user = userRepository.findByUserName(principal.getName());
-			if (user != null) {
-				// set user to menu
-				menuDTO.setuId(user.getUserId());
-				menuDTO.setUserName(user.getUserName());
-				// set userType
-				// 1 -> registered user
-				// 2 -> visitor
-				if (user.getUserType().equals(UserType.REGISTERED)) {
-					menuDTO.setUserType(1);
-				}
-				if (user.getUserType().equals(UserType.VISITOR)) {
-					menuDTO.setUserType(2);
-				}
-			}
-
-			Menu menu = menuMapper.toEntity(menuDTO);
-
-			// if parentMenuId(pid) is null then define it as a root menu
-			if (menuDTO.getpId() != null) {
-				Optional<Menu> menuOp = menuRepository.findById(menuDTO.getpId());
-				menu.setParentMenu(menuOp.isPresent() ? menuOp.get() : null);
-			} else {
-				menu.setParentMenu(null);
-			}
-
-			// check if orderId presents?
-
-			if (menuDTO.getOrderId() != null) { // check if orderId presents in requestBody
-				// if yes, then do relevant changes
-
-				// 1) get Menus by the pId of menu to be stored --> sortedByOrderId
-
-				List<Menu> menus = new ArrayList<>();
-
-				Long pId = menuDTO.getpId();
-
-				if (pId == null) {
-
-					// get all menus with pId == null (root menu)
-					menus = menuRepository.findAllByParentMenuOrderByOrderId(null);
-
-				} else {
-
-					// get all menus with pId
-					Optional<Menu> parentMenu = menuRepository.findById(pId);
-					if (parentMenu != null) {
-						menus = menuRepository.findAllByParentMenuOrderByOrderId(parentMenu.get());
-					}
-				}
-
-				if (menus.isEmpty()) {
-					// 1.1) if Menus do not exist, then set the first orderId as per requestBody
-					menu.setOrderId(menuDTO.getOrderId());
-				} else {
-
-					for (Menu existingMenu : menus) {
-						if (existingMenu.getOrderId() < menuDTO.getOrderId()) {
-							// 1.2) if Menus (sortedByOrderId) exist, then iterate until menus'
-							// existingMenuOrderId < newMenuOrderId
-							continue;
-						} else {
-							// 1.2.1) then make orderId+1 for remaining Menus
-							existingMenu.setOrderId(existingMenu.getOrderId() + 1);
-						}
-					}
-
-					// 1.2.2) setNewMenuOrderId as per requestBoday
-					menu.setOrderId(menuDTO.getOrderId());
-				}
-
-			} else { // if orderId does not present in requestBody
-
-				// if not then to assign last orderId --> follow the steps below!
-
-				// 1) get Menus by the pId of menu to be stored
-
-				List<Menu> menus = new ArrayList<>();
-
-				Long pId = menuDTO.getpId();
-
-				if (pId == null) {
-
-					// get all menus with pId == null (root menu)
-					menus = menuRepository.findAllByParentMenuOrderByOrderId(null);
-
-				} else {
-
-					// get all menus with pId
-					Optional<Menu> parentMenu = menuRepository.findById(pId);
-					if (parentMenu != null) {
-						menus = menuRepository.findAllByParentMenuOrderByOrderId(parentMenu.get());
-					}
-				}
-
-				if (menus.isEmpty()) {
-					// 1.1) if Menus do not exist, then set the first orderId as 0
-					menu.setOrderId(0);
-				} else {
-					// 1.2) if exists, then get menu with maxOrderId
-					Menu lastIndexedMenu = menus.get(menus.size() - 1);
-
-					// 1.2.1) set maxOrderId+1 to the orderId of menu to be stored
-					menu.setOrderId(lastIndexedMenu.getOrderId() + 1);
-				}
-
-			}
-
-			Menu menuCreated = menuRepository.save(menu);
-			return menuMapper.toDTO(menuCreated);
-
-		} else { // to update the Menu
-
-			Optional<Menu> menu = menuRepository.findById(menuDTO.getMenuId());
-			menu.ifPresent(existingMenu -> {
-				if (menuDTO.getMenuName() != null) {
-					existingMenu.setMenuName(menuDTO.getMenuName());
-				}
-				if (menuDTO.getOrderId() != null) { // check if orderId presents in requestBody
-					// if yes, then do relevant changes
-
-					// 1) get Menus by the pId of menu to be stored --> sortedByOrderId
-
-					List<Menu> menus = new ArrayList<>();
-
-					Long pId = menuDTO.getpId();
-
-					if (pId == null) {
-
-						// get all menus with pId == null (root menu)
-						menus = menuRepository.findAllByParentMenuOrderByOrderId(null);
-
-					} else {
-
-						// get all menus with pId
-						Optional<Menu> parentMenu = menuRepository.findById(pId);
-						if (parentMenu != null) {
-							menus = menuRepository.findAllByParentMenuOrderByOrderId(parentMenu.get());
-						}
-					}
-
-					if (menus.isEmpty()) {
-						// 1.1) if Menus do not exist, then set the first orderId as per requestBody
-						existingMenu.setOrderId(menuDTO.getOrderId());
-					} else {
-
-						for (Menu existingMenu1 : menus) {
-							if (existingMenu.getMenuId().equals(existingMenu1.getMenuId())
-									&& existingMenu.getMenuId() == existingMenu1.getMenuId()) {
-								// skip for menu itself
-								continue;
-							}
-							if (existingMenu1.getOrderId() < menuDTO.getOrderId()) {
-								// 1.2) if Menus (sortedByOrderId) exist, then iterate until menus'
-								// existingMenuOrderId < newMenuOrderId
-								continue;
-							} else {
-								// 1.2.1) then make orderId+1 for remaining Menus
-								existingMenu1.setOrderId(existingMenu1.getOrderId() + 1);
-							}
-						}
-
-						// 1.2.2) setNewMenuOrderId as per requestBoday
-						existingMenu.setOrderId(menuDTO.getOrderId());
-					}
-
-				}
-				if (menuDTO.getUserType() != null) {
-					existingMenu.setUserType(menuDTO.getUserType());
-				}
+		// newItems to return saved items
+		List<MenuDTO> newMenus = new ArrayList<MenuDTO>();
+		
+		// itemToUpdateList to update list of items
+		List<Menu> menuToUpdateList = new ArrayList<Menu>();
 				
-				// TODO : update ordering while updating pId! --> need to MANAGE ORDERING to new pId(to new parent folder)
+		for (MenuDTO menuDTO: menuDTOs) {
+			
+			// to create new menu
+			if (menuDTO.getMenuId() == null) {
+				User user = userRepository.findByUserName(principal.getName());
+				if (user != null) {
+					// set user to menu
+					menuDTO.setuId(user.getUserId());
+					menuDTO.setUserName(user.getUserName());
+					// set userType
+					// 1 -> registered user
+					// 2 -> visitor
+					if (user.getUserType().equals(UserType.REGISTERED)) {
+						menuDTO.setUserType(1);
+					}
+					if (user.getUserType().equals(UserType.VISITOR)) {
+						menuDTO.setUserType(2);
+					}
+				}
+
+				Menu newMenu = menuMapper.toEntity(menuDTO);
 				
-				
+				// if parentMenuId(pid) is null then define it as a root menu
 				if (menuDTO.getpId() != null) {
 					Optional<Menu> menuOp = menuRepository.findById(menuDTO.getpId());
-					existingMenu.setParentMenu(menuOp.isPresent() ? menuOp.get() : null);
-					
-					// 1) get Menus by the pId of menu to be stored
-
-					List<Menu> menus = new ArrayList<>();
-
-					Long pId = menuDTO.getpId();
-
-					if (pId == null) {
-
-						// get all menus with pId == null (root menu)
-						menus = menuRepository.findAllByParentMenuOrderByOrderId(null);
-
-					} else {
-
-						// get all menus with pId
-						Optional<Menu> parentMenu = menuRepository.findById(pId);
-						if (parentMenu != null) {
-							menus = menuRepository.findAllByParentMenuOrderByOrderId(parentMenu.get());
-						}
-					}
-
-					if (menus.isEmpty()) {
-						// 1.1) if Menus do not exist, then set the first orderId as 0
-						existingMenu.setOrderId(0);
-					} else {
-						// 1.2) if exists, then get menu with maxOrderId
-						Menu lastIndexedMenu = menus.get(menus.size() - 1);
-
-						// 1.2.1) set maxOrderId+1 to the orderId of menu to be stored
-						existingMenu.setOrderId(lastIndexedMenu.getOrderId() + 1);
-					}
-					
+					newMenu.setParentMenu(menuOp.isPresent() ? menuOp.get() : null);
+				} else {
+					newMenu.setParentMenu(null);
 				}
-			});
+				
+				menuToUpdateList.add(newMenu);
+			} else {
+				// to update the Menu
 
-			Menu menuUpdated = menuRepository.save(menu.get());
-			return menuMapper.toDTO(menuUpdated);
+				Optional<Menu> menuToUpdate = menuRepository.findById(menuDTO.getMenuId());
+				
+				menuToUpdate.ifPresent(existingMenu -> {
+					if (menuDTO.getMenuName() != null) {
+						existingMenu.setMenuName(menuDTO.getMenuName());
+					}
+					
+					if (menuDTO.getUserType() != null) {
+						existingMenu.setUserType(menuDTO.getUserType());
+					}
+					
+					// to update parent menu
+					if (menuDTO.getpId() != null) {
+						Optional<Menu> menuOp = menuRepository.findById(menuDTO.getpId());
+						existingMenu.setParentMenu(menuOp.isPresent() ? menuOp.get() : null);	
+					}
+					
+					existingMenu.setOrderId(menuDTO.getOrderId());
+				});
+				
+				menuToUpdateList.add(menuToUpdate.get());
+			}
 		}
-
+		
+		List<Menu> updatedMenus = menuRepository.saveAll(menuToUpdateList);
+		
+		// convert saved menus to menuDTOs
+		for(Menu updatedMenu: updatedMenus) {
+			newMenus.add(menuMapper.toDTO(updatedMenu));
+		}
+		
+		return newMenus;
 	}
 
 	/**
