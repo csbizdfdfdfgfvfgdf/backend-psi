@@ -160,6 +160,9 @@ public class MenuServiceImpl implements MenuService {
 						Optional<Menu> menuOp = menuRepository.findById(menuDTO.getpId());
 						existingMenu.setParentMenu(menuOp.isPresent() ? menuOp.get() : null);	
 					}
+					else {
+						existingMenu.setParentMenu(null);
+					}
 					
 					existingMenu.setOrderId(menuDTO.getOrderId());
 				});
