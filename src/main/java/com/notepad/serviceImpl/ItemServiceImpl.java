@@ -96,10 +96,14 @@ public class ItemServiceImpl implements ItemService {
 					if (existingItem.getMenu().getMenuId() != itemDTO.getpId()) {
 						// get MenuBy menuDTO.getpId()
 						
-						Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
-						if (menuOp.isPresent()) {
-							// set this menu to existing item
-							existingItem.setMenu(menuOp.get());
+						if (itemDTO.getpId() == null) {
+							existingItem.setMenu(null);
+						} else {
+							Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
+							if (menuOp.isPresent()) {
+								// set this menu to existing item
+								existingItem.setMenu(menuOp.get());
+							}
 						}
 					}
 					
