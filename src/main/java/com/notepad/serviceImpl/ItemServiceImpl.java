@@ -3,6 +3,7 @@ package com.notepad.serviceImpl;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -94,18 +95,24 @@ public class ItemServiceImpl implements ItemService {
 					
 					// to update parent menu id
 					//null checks and pid check as it can be null for root item
-					if (null != itemDTO.getpId() && null != existingItem.getMenu() && 
-							existingItem.getMenu().getMenuId() != itemDTO.getpId()) {
-						// get MenuBy menuDTO.getpId()
+					if (null != itemDTO.getpId()) {
 						
-						Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
-						if (menuOp.isPresent()) {
-							// set this menu to existing item
-							existingItem.setMenu(menuOp.get());
+						//menu id is not equal to pid or menu id is null
+						if((null != existingItem.getMenu() && (Objects.isNull(existingItem.getMenu().getMenuId()) || existingItem.getMenu().getMenuId() != itemDTO.getpId())) 
+								|| Objects.isNull(existingItem.getMenu())) {
+						
+							// get MenuBy menuDTO.getpId()
+							
+							Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
+							if (menuOp.isPresent()) {
+								// set this menu to existing item
+								existingItem.setMenu(menuOp.get());
+							}
 						}
+						
 				
 					}
-					else if(itemDTO.getpId() == null) {
+					else {
 						existingItem.setMenu(null);
 					}
 					
