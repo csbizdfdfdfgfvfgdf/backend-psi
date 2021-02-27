@@ -93,7 +93,8 @@ public class ItemServiceImpl implements ItemService {
 					}
 					
 					// to update parent menu id
-					if (existingItem.getMenu().getMenuId() != itemDTO.getpId()) {
+					if (null != itemDTO.getpId() && null != existingItem.getMenu() && 
+							existingItem.getMenu().getMenuId() != itemDTO.getpId()) {
 						// get MenuBy menuDTO.getpId()
 						
 						Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
@@ -101,6 +102,9 @@ public class ItemServiceImpl implements ItemService {
 							// set this menu to existing item
 							existingItem.setMenu(menuOp.get());
 						}
+					}
+					else if(itemDTO.getpId() == null) {
+						existingItem.setMenu(null);
 					}
 					
 					existingItem.setOrderId(itemDTO.getOrderId());
