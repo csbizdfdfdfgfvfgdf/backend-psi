@@ -93,19 +93,17 @@ public class ItemServiceImpl implements ItemService {
 					}
 					
 					// to update parent menu id
+					//null checks and pid check as it can be null for root item
 					if (null != itemDTO.getpId() && null != existingItem.getMenu() && 
 							existingItem.getMenu().getMenuId() != itemDTO.getpId()) {
 						// get MenuBy menuDTO.getpId()
 						
-						if (itemDTO.getpId() == null) {
-							existingItem.setMenu(null);
-						} else {
-							Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
-							if (menuOp.isPresent()) {
-								// set this menu to existing item
-								existingItem.setMenu(menuOp.get());
-							}
+						Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
+						if (menuOp.isPresent()) {
+							// set this menu to existing item
+							existingItem.setMenu(menuOp.get());
 						}
+				
 					}
 					else if(itemDTO.getpId() == null) {
 						existingItem.setMenu(null);
