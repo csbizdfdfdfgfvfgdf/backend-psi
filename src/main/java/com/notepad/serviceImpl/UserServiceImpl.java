@@ -1,5 +1,7 @@
 package com.notepad.serviceImpl;
 
+import static com.notepad.util.Utility.isValidPassword;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,9 +20,9 @@ import com.notepad.dto.TokenAndPasswordDTO;
 import com.notepad.dto.UserDTO;
 import com.notepad.entity.Token;
 import com.notepad.entity.User;
-import com.notepad.entity.enumeration.UserType;
 import com.notepad.error.BadRequestAlertException;
 import com.notepad.error.EmailAlreadyUsedException;
+import com.notepad.error.InvalidPasswordException;
 import com.notepad.error.UsernameAlreadyUsedException;
 import com.notepad.mapper.UserMapper;
 import com.notepad.repository.TokenRepository;
@@ -73,6 +75,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	@Override
 	public UserDTO save(UserDTO userDTO) {
 		log.info("Request to register user : {} ",userDTO);
+		
+		if(!isValidPassword(userDTO.getPassword())) {
+			throw new InvalidPasswordException();
+		}
 		
 		userDTO.setEmail(userDTO.getEmail().toLowerCase());
 		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
@@ -163,6 +169,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	@Override
 	public void resetPassword(TokenAndPasswordDTO tokenAndPasswordDTO) {
 		log.info("Request to validate token and save the reset password for a user");
+		
+		if(!isValidPassword(tokenAndPasswordDTO.getPassword())) {
+			throw new InvalidPasswordException();
+		}
 		
 		Token token = tokenRepository.findByTokenAndStatus(tokenAndPasswordDTO.getToken(), true);
 		if(this.validateToken(tokenAndPasswordDTO, token) && 
