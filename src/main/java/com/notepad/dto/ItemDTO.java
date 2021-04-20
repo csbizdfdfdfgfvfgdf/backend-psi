@@ -14,13 +14,16 @@ public class ItemDTO implements Serializable {
 	
 	@ApiModelProperty(value = "The database generated note ID")
 	private Long itemId;
+
 	@ApiModelProperty(value = "The content of a note")
 	private String content;
+
 	@ApiModelProperty(value = "The order id for the sorting of notes")
 	private Integer orderId;
 	
 	@ApiModelProperty(value = "The id of the assigned user")
 	private Long uId;
+
 	@ApiModelProperty(value = "The name of the assigned user")
 	private String userName;
 	
@@ -29,6 +32,7 @@ public class ItemDTO implements Serializable {
 	
 	@ApiModelProperty(value = "The created date of a note")
 	private LocalDateTime created;
+	
 	@ApiModelProperty(value = "The updated date of a note")
 	private LocalDateTime updated;
 	
