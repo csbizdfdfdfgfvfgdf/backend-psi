@@ -23,6 +23,14 @@ import org.springframework.web.filter.CorsFilter;
 import com.notepad.jwt.config.JwtAuthenticationEntryPoint;
 import com.notepad.jwt.config.JwtRequestFilter;
 
+/**
+* The WebSecurityConfig class sets security on the app using spring security
+* by overriding WebSecurityConfigurerAdapter methods.
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -34,6 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService jwtUserDetailsService;
 
+	// Custom filter for authenticatin user by username and token
 	@Autowired
 	private JwtRequestFilter jwtRequestFilter;
 	
@@ -56,6 +65,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return super.authenticationManagerBean();
 	}
 
+	/**
+     * Adds security on paths that are accessible. Few pages are public and
+     * others are first authenticated.
+     *
+     * @param httpSecurity
+     */
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		// We don't need CSRF for this example
@@ -83,6 +98,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	
+	/**
+     * Adds cross origins from which the request is allowed
+     *
+     * @return CorsFilter.
+     */
 	@Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source =
@@ -96,7 +116,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         		"http://localhost:4200", 
         		"http://52.88.158.96:4200",
         		"https://52.88.158.96:4200"));
-        //config.addAllowedOrigin("https://ppssii.com");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);

@@ -32,8 +32,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * REST controller for managing {@link Menu}
- */
+* The MenuController declares the REST APIs for operations for Folders
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @RestController
 @CrossOrigin
 @Api(value="Folders", description="Operations pertaining to folders")
@@ -51,7 +55,7 @@ public class MenuController {
 	}
 	
 	/**
-     * {@code POST  /menus} : Create a new menu
+     * {@code POST  /menus} : Create new menu/menus
      *
      * @param menuDTO : the menuDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new menuDTO.
@@ -66,7 +70,7 @@ public class MenuController {
 	}
 
 	/**
-     * {@code PUT  /updateMenu} : Updates an existing menu.
+     * {@code PUT  /updateMenu} : Updates existing menu/menus.
      *
      * @param menuDTO the menuDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated menuDTO,
@@ -86,17 +90,6 @@ public class MenuController {
 		}
 		return ResponseEntity.ok().body(menuService.save(menuDTOs, principal));
 	}
-	
-//	/**
-//     * {@code GET  /menus} : get all the menus.
-//     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of menus in body.
-//     */
-//	@GetMapping("/menus")
-//	public ResponseEntity<List<MenuDTO>> getAllMenus() {
-//		log.info("Rest request to get all Menus(Folders)");
-//		List<MenuDTO> menuDTOs = menuService.findAll();
-//		return ResponseEntity.ok().body(menuDTOs);
-//	}
 	
 	/**
      * {@code GET  /menus} : get all the menus by logged in user.
@@ -144,6 +137,12 @@ public class MenuController {
 	    return ResponseEntity.status(HttpStatus.OK).body(map);
 	}
 	
+	/**
+     * {@code  /hello} : Method to greet the user
+     *
+     * @param User
+     * @return the {@link ResponseEntity} with status {@code 200 and a greeting message}.
+     */
 	@MessageMapping("/hello")
 	@SendTo("/topic/greetings")
 	public ResponseEntity<String> greeting(User user) throws Exception {

@@ -1,5 +1,7 @@
 package com.notepad.jwt.controller;
 
+import java.net.URISyntaxException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +32,13 @@ import com.notepad.redis.repo.RedisUserRepo;
 import com.notepad.service.UserService;
 import com.notepad.serviceImpl.UserServiceImpl;
 
+/**
+* The JwtAuthenticationController declares the REST APIs for authentications
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {
@@ -49,18 +58,35 @@ public class JwtAuthenticationController {
 	@Autowired
 	private RedisUserRepo redisUserRepo;
 
+	/**
+     * {@code POST  /authenticate} : authenticate user and generate token
+     *
+     * @param JwtRequest : request with username and password
+     * @return the {@link ResponseEntity} with status {@code 200} and with body token.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
+		// authenticate user by username and password
 		authenticate(authenticationRequest.getUserName(), authenticationRequest.getPassword());
 
+		// get user by username
 		final UserDetails userDetails = userServiceImpl.loadUserByUsername(authenticationRequest.getUserName());
 
+		// generate token
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
 		return ResponseEntity.ok(new JwtResponse(token));
 	}
 	
+	/**
+     * {@code POST  /authenticate-with-uuid} : create authentication token for visitor
+     *
+     * @param RedisUser : user with username and password
+     * @return the {@link ResponseEntity} with status {@code 200} and with body token.
+     * @throws BadRequestAlertEception if the Location URI syntax is incorrect.
+     */
 	@RequestMapping(value = "/authenticate-with-uuid", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationTokenForVisitor(@RequestBody RedisUser redisUser) throws Exception {
 
@@ -83,12 +109,24 @@ public class JwtAuthenticationController {
 
 	}
 
+	/**
+     * {@code POST  /register} : change visitor user to registered user
+     *
+     * @param UserDTO : userifo
+     * @return the {@link ResponseEntity} with status {@code 200} and with user in body.
+     * @throws Exeption if user failed to save.
+     */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<?> saveUser(@RequestBody UserDTO userDTO) throws Exception {
 		userDTO.setUserType(UserType.REGISTERED);
 		return ResponseEntity.ok(userService.save(userDTO));
 	}
 
+	/**
+     * {@code GET  /logout} : logout user
+     *
+     * @return the logout successful message
+     */
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public String logout(HttpServletRequest request, HttpServletResponse response) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();

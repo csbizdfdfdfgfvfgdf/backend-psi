@@ -34,8 +34,12 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * REST controller for managing {@link User}
- */
+* The UserController declares the REST APIs for operations for Users
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @RestController
 @CrossOrigin
 @Api(value="Users", description="Operations pertaining to users")
@@ -69,13 +73,12 @@ public class UserController {
 	}
 
 	/**
-	 * {@code GET  /auth/makeUuid} : get UUID.
+	 * {@code GET  /auth/makeUuid} : Creates UUID and a new visitor user.
 	 * 
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the UUID.
 	 */
 	@ApiOperation(value = "Creates a user by new generating and returning UUID that is further used in header "
 			+ "with all calls to authenticate user")
-//	@ApiImplicitParams({})
 	@ApiImplicitParams(@ApiImplicitParam(name = "uuid"))
 	@GetMapping("auth/makeUuid")
 	public ResponseEntity<ResponseDto> getUUID() {
@@ -140,10 +143,11 @@ public class UserController {
 			String ctx = request.getContextPath();
 			String base = url.substring(0, url.length() - uri.length() + ctx.length()) + "/";
 
+			// password reset link
 			String passwordResetURL = base + "setNewPassword?id=" + user.get().getUserId() + "&token=" + token;
 			System.out.println("passwordResetURL: " + passwordResetURL);
 
-			// send mail
+			// send reset password mail
 			mailService.sendPasswordResetMail(user.get(), passwordResetURL);
 
 		}

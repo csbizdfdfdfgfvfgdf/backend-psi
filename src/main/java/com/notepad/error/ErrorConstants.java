@@ -2,6 +2,13 @@ package com.notepad.error;
 
 import java.net.URI;
 
+/**
+* The ErrorConstants class defines constants to use within the whole app
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 public final class ErrorConstants {
 
     public static final String ERR_CONCURRENCY_FAILURE = "error.concurrencyFailure";

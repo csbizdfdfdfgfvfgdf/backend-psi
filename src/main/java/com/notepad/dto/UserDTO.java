@@ -9,6 +9,13 @@ import com.notepad.entity.enumeration.UserType;
 
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+* The UserDTO to store info of a user
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO implements Serializable {
 

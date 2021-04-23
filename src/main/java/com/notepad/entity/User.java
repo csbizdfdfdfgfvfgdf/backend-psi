@@ -15,6 +15,13 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.notepad.entity.enumeration.UserType;
 
+/**
+* The User entity to align user info with DB
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Entity
 @Table(name = "pre_xiaomy_cus_todo_user")
 public class User implements Serializable {

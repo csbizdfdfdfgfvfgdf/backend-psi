@@ -14,6 +14,13 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
+/**
+* The Item entity to align note info with DB
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Entity
 @Table(name = "pre_xiaomy_cus_todo_item")
 public class Item implements Serializable {

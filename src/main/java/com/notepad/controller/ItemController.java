@@ -30,8 +30,12 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * REST controller for managing {@link Item}
- */
+* The ItemController declares the REST APIs for operations for Notes
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Api(value="Notes", description="Operations pertaining to notes")
 @RestController
 //@RequestMapping("/api")
@@ -44,7 +48,7 @@ public class ItemController {
 	private ItemService itemService;
 	
 	/**
-     * {@code POST  /api/menu/addItem} : Create a new item
+     * {@code POST  /api/menu/addItem} : Create a new item/items
      *
      * @param itemDTO : the itemDTO to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new itemDTO.
@@ -59,7 +63,7 @@ public class ItemController {
 	}
 	
 	/**
-     * {@code PUT  /api/menu/updateItem} : Updates an existing item.
+     * {@code PUT  /api/menu/updateItem} : Updates existing item/items.
      *
      * @param itemDTO the itemDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated itemDTO,
@@ -82,7 +86,7 @@ public class ItemController {
 	/**
      * {@code GET  /api/menu/menuItem/{menuId}} : get all the items by menuId.
      * @param menuId to get all the items inside this "menuId" menu
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of menus in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of notes in body.
      */
 	@ApiOperation(value = "Returns all notes within a folder by menuId")
 	@GetMapping("/api/menu/menuItem/{menuId}")
@@ -91,7 +95,11 @@ public class ItemController {
 		List<ItemDTO> itemDTOs = itemService.findAllByMenu(menuId);
 		return ResponseEntity.ok().body(itemDTOs);
 	}
-
+	
+	/**
+     * {@code GET  /api/menu/menuItemByUser} : get all the items by user id.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of notes in body.
+     */
 	@ApiOperation(value = "Returns all notes by user id")
 	@GetMapping("/api/menu/menuItemByUser")
 	public ResponseEntity<List<ItemDTO>> getAllItemsByUserId(Principal principal) {

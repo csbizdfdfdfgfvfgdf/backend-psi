@@ -23,6 +23,14 @@ import com.notepad.repository.MenuRepository;
 import com.notepad.repository.UserRepository;
 import com.notepad.service.ItemService;
 
+/**
+* The ItemServiceImpl implements ItemService that
+* Get, Save, Update or Deletes Notes(Items)
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Service
 public class ItemServiceImpl implements ItemService {
 
@@ -41,10 +49,10 @@ public class ItemServiceImpl implements ItemService {
 	private MenuRepository menuRepository;
 
 	/**
-	 * to save a new item
+	 * Method to save or update new item/items
 	 *
-	 * @param itemDTO : the itemDTO to create.
-	 * @return the persisted entity.
+	 * @param List<ItemDTO> : list of items to create or update.
+	 * @return the list of saved or updated items.
 	 * 
 	 */
 	@Override
@@ -62,33 +70,41 @@ public class ItemServiceImpl implements ItemService {
 			// to create item
 			
 			if (itemDTO.getItemId() == null) {
+				
+				// get logged in user
 				User user = userRepository.findByUserName(principal.getName());
+				
 				if (user != null) {
 					// set user to item
 					itemDTO.setuId(user.getUserId());
 					itemDTO.setUserName(user.getUserName());
 				}
 
+				// if note content is empty or parent menu id is not given then throw error
 				if (itemDTO.getpId() == null && itemDTO.getContent() == null) {
 					throw new BadRequestAlertException("Content and parentId must not be null", "Item", null);
 				}
 				
+				// convert ItemDTO to ItemEntity to save in repo
 				Item newItem = itemMapper.toEntity(itemDTO);
+				
+				// If no menu item is given then set null
 				if(newItem.getMenu().getMenuId()==null){
 					newItem.setMenu(null);
 				}
 				
 				itemToUpdateList.add(newItem);
 				
-//				Item item = itemRepository.save(newItem);
-//				newItems.add(itemMapper.toDTO(item));
-				
 			} else {
 				// to update item
 				
+				// get item to update by item id
 				Optional<Item> itemToUpdate = itemRepository.findById(itemDTO.getItemId());
 				
+				// if item found then update its content and parent id
 				itemToUpdate.ifPresent(existingItem -> {
+					
+					// if there is content then update it
 					if (itemDTO.getContent() != null) {
 						existingItem.setContent(itemDTO.getContent());
 					}
@@ -101,8 +117,7 @@ public class ItemServiceImpl implements ItemService {
 						if((null != existingItem.getMenu() && (Objects.isNull(existingItem.getMenu().getMenuId()) || existingItem.getMenu().getMenuId() != itemDTO.getpId())) 
 								|| Objects.isNull(existingItem.getMenu())) {
 						
-							// get MenuBy menuDTO.getpId()
-							
+							// get Menu by menuDTO.getpId()
 							Optional<Menu> menuOp = menuRepository.findById(itemDTO.getpId());
 							if (menuOp.isPresent()) {
 								// set this menu to existing item
@@ -113,16 +128,20 @@ public class ItemServiceImpl implements ItemService {
 				
 					}
 					else {
+						// If item is linked to no menu then set null
 						existingItem.setMenu(null);
 					}
 					
+					// update order id of item for sorting
 					existingItem.setOrderId(itemDTO.getOrderId());
 				});
 				
+				// add udpated item to list of items
 				itemToUpdateList.add(itemToUpdate.get());
 			}
 		}
 
+		// save or update list of all items
 		List<Item> updatedItems = itemRepository.saveAll(itemToUpdateList);
 		
 		// convert saved items to itemDTOs
@@ -141,6 +160,8 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public void delete(Long itemId) {
 		log.info("Request to delete item with id : {} ", itemId);
+		
+		// delete item by item id
 		itemRepository.deleteById(itemId);
 	}
 
@@ -148,15 +169,23 @@ public class ItemServiceImpl implements ItemService {
 	 * Get all the items by menu.
 	 *
 	 * @param menuId id of menu to which item(s) belong(s)!
-	 * @return the list of entities.
+	 * @return the list of items.
 	 */
 	@Override
 	public List<ItemDTO> findAllByMenu(Long menuId) {
 		log.info("Request to find all items with menuId : {} ", menuId);
+		
+		// itemDTOs list to return all items of a menu
 		List<ItemDTO> itemDTOs = new ArrayList<>();
+		
+		// get menu by menu id
 		menuRepository.findById(menuId).ifPresent(menu -> {
+			
+			// get all items of a menu ordered by order id
 			List<Item> items = itemRepository.findAllByMenuOrderByOrderId(menu);
 			if (!items.isEmpty()) {
+				
+				// convert found items entities to ItemDTOs
 				items.forEach(item -> {
 					itemDTOs.add(itemMapper.toDTO(item));
 				});
@@ -165,14 +194,30 @@ public class ItemServiceImpl implements ItemService {
 
 		return itemDTOs;
 	}
+	
+	/**
+	 * Get all the items by user.
+	 *
+	 * @return the list of items.
+	 */
 	@Override
 	public List<ItemDTO> findAllByUserId(Principal principal) {
 		log.info("Request to find all items with userId : {} ");
+		
+		// itemDTOs list to retuen all items of a user
 		List<ItemDTO> itemDTOs = new ArrayList<>();
+		
+		// get logged in user by name
 		User user = userRepository.findByUserName(principal.getName());
 		if (user != null) {
+			
+			// get user by id
 			userRepository.findById(user.getUserId()).ifPresent(res -> {
+				
+				// get all items of a user
 				List<Item> items = itemRepository.findAllByUserAndMenu(res,null);
+				
+				// if found the convert all items entities to ItemDTOs
 				if (!items.isEmpty()) {
 					items.forEach(item -> {
 						itemDTOs.add(itemMapper.toDTO(item));

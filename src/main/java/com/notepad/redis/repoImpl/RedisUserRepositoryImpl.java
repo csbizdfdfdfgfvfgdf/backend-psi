@@ -18,6 +18,14 @@ import com.notepad.redis.model.RedisUser;
 import com.notepad.redis.repo.RedisUserRepo;
 import com.notepad.repository.UserRepository;
 
+/**
+* The RedisUserRepositoryImpl implements RedisUserRepo that
+* Get, Save, Update or Deletes redis users
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Repository
 public class RedisUserRepositoryImpl implements RedisUserRepo {
 	
@@ -33,6 +41,11 @@ public class RedisUserRepositoryImpl implements RedisUserRepo {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	/**
+	 * parameterized constructor for RedisUserRepositoryImpl
+	 * that sets redisTemplate and normal user repository
+	 * 
+	 */
 	public RedisUserRepositoryImpl(RedisTemplate<String, RedisUser> redisTemplate, UserRepository userRepository) {
 
 		this.redisTemplate = redisTemplate;
@@ -64,6 +77,8 @@ public class RedisUserRepositoryImpl implements RedisUserRepo {
 		// 1. check if user exists in redis-DB
 
 		RedisUser redisUser1 = this.findByUserName(redisUser.getUserName());
+		
+		// if redis user is already present by username then throw exception
 		if (redisUser1 == null) {
 
 			// 2. if not in redis-DB then check if user exists in MySQL-DB

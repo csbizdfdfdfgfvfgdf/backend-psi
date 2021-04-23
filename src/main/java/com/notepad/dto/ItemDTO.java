@@ -5,6 +5,13 @@ import java.time.LocalDateTime;
 
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+* The ItemDTO to store a note info
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 public class ItemDTO implements Serializable {
 
 	/**

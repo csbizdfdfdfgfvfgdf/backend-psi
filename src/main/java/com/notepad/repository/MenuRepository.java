@@ -8,6 +8,14 @@ import org.springframework.stereotype.Repository;
 import com.notepad.entity.Menu;
 import com.notepad.entity.User;
 
+/**
+* The MenuRepository that extends JpaRepository
+*  to define custom operations related to folder
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 

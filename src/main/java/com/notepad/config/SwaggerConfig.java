@@ -1,5 +1,6 @@
 package com.notepad.config;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -20,12 +22,25 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+* The SwaggerConfig class sets controllers and models info
+* for showing in swagger-ui.
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
 	
 	private final Logger log = LoggerFactory.getLogger(SwaggerConfig.class);
 
+	/**
+     * Create a Docket bean that is used by swagger
+     * to set configurations for swagger
+     *
+     */
     @Bean
     public Docket api() {
     	//Adding uuid authentication header
@@ -44,6 +59,11 @@ public class SwaggerConfig {
             .globalOperationParameters(aParameters);
     }
 
+    /**
+     * Returns complete app Rest Api info
+     *
+     * @return ApiInfo
+     */
     private ApiInfo apiInfo() {
     	log.info("setting up info about API ");
         ApiInfo apiInfo = new ApiInfo("REST APIs", "Network Notepad API documentation", "1.0", null, null, null, null, Collections.emptyList());

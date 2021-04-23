@@ -6,6 +6,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+* The Token entity to align token info with DB
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Entity
 @Table(name = "token_master")
 public class Token {
@@ -20,10 +27,13 @@ public class Token {
   
     private String token;
     
+    // expiry date and time of token
     private Long expiryDate;
     
+    // active of deactive status of token
     private boolean status;
     
+    // the user to which token is linked
     @ManyToOne
     private User user;
 

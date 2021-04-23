@@ -2,6 +2,13 @@ package com.notepad.dto;
 
 import java.io.Serializable;
 
+/**
+* The TokenAndPasswordDTO to store token info linked to user email
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 public class TokenAndPasswordDTO implements Serializable {
 
 	/**

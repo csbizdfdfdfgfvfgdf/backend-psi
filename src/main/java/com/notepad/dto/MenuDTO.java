@@ -4,6 +4,13 @@ import java.io.Serializable;
 
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+* The MenuDTO to store a folder info
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 public class MenuDTO implements Serializable {
 
 	/**

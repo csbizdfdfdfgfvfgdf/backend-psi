@@ -2,6 +2,13 @@ package com.notepad.redis.model;
 
 import java.io.Serializable;
 
+/**
+* The RedisUser model that have redis user info
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 public class RedisUser implements Serializable {
 
 	private static final long serialVersionUID = 1L;

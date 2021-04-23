@@ -2,6 +2,13 @@ package com.notepad.jwt.model;
 
 import java.io.Serializable;
 
+/**
+* The JwtRequest that have username and password of a user
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 public class JwtRequest implements Serializable {
 
 	private static final long serialVersionUID = 5926468583005150707L;

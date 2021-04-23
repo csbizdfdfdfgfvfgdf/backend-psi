@@ -33,12 +33,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 
+	/**
+     * Filter that runs before requests and a
+     * uthenticates the user using uuid and token
+     *
+     * @param HttpServletRequest, HttpServletResponse, FilterChain
+     */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 
+		// Gets token from header
 		final String requestTokenHeader = request.getHeader("Authorization");
 
+		// Gets unique user id
 		final String uuidHeader = request.getHeader("uuid");
 
 		String username = null;

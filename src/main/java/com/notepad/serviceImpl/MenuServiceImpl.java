@@ -22,6 +22,14 @@ import com.notepad.repository.MenuRepository;
 import com.notepad.repository.UserRepository;
 import com.notepad.service.MenuService;
 
+/**
+* The MenuServiceImpl implements MenuService that
+* Get, Save, Update or Deletes Folders(Menus)
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Service
 //@Transactional
 public class MenuServiceImpl implements MenuService {
@@ -41,20 +49,26 @@ public class MenuServiceImpl implements MenuService {
 	private ItemRepository itemRepository;
 
 	/**
-	 * Get all the menus ordered by orderId.
+	 * Get all the menus of logged in user ordered by orderId.
 	 *
-	 * @return the list of entities.
+	 * @return the list of menus.
 	 */
 	@Override
 	public List<MenuDTO> findAllByLoggedInUser(Principal principal) {
 		log.info("Request to get all Menus(Folders) by logged in user");
+		
+		// menuDTOs list to return all menus
 		List<MenuDTO> menuDTOs = new ArrayList<>();
 
+		// get logged in user
 		User user = userRepository.findByUserName(principal.getName());
 
 		if (user != null) {
+			
+			// Get all menus of a user ordered by orderId
 			List<Menu> menus = menuRepository.findAllByUserOrderByOrderId(user);
 
+			// If menus are not empty then convert menu Entities to menuDTOs
 			if (!menus.isEmpty()) {
 				menus.forEach(menu -> {
 					menuDTOs.add(menuMapper.toDTO(menu));
@@ -68,20 +82,28 @@ public class MenuServiceImpl implements MenuService {
 	/**
 	 * Get all the child menus by parentMenuId, ordered by orderId.
 	 *
-	 * @param menuId is parentId
-	 * @return the list of entities.
+	 * @param menuId is parent folder id
+	 * @return the list of menus.
 	 */
 	@Override
 	public List<MenuDTO> findAllMenusByParentMenuAndUser(Long menuId, Principal principal) {
 
+		// menuDTOs to return all menus
 		List<MenuDTO> menuDTOs = new ArrayList<>();
 
+		// get logged in user
 		User user = userRepository.findByUserName(principal.getName());
 
 		if (user != null) {
+			
+			// Get parent menu by parent menuId
 			Optional<Menu> parentMenu = menuRepository.findById(menuId);
 			if (parentMenu != null) {
+				
+				// get all sub folders of a menu of a user ordered by order id
 				List<Menu> menus = menuRepository.findAllByParentMenuAndUserOrderByOrderId(parentMenu.get(), user);
+				
+				// If menus are not empty then convert menu Entities to menuDTOs
 				if (!menus.isEmpty()) {
 					menus.forEach(menu -> {
 						menuDTOs.add(menuMapper.toDTO(menu));
@@ -94,10 +116,10 @@ public class MenuServiceImpl implements MenuService {
 	}
 
 	/**
-	 * to save a new menu
+	 * Method to save or update new menu/menus
 	 *
-	 * @param menuDTO : the menuDTO to create.
-	 * @return the persisted entity.
+	 * @param List<MenuDTO> : the list of menuDTO to create or update.
+	 * @return the list of saved or updated menus.
 	 * 
 	 */
 	@Override
@@ -130,11 +152,16 @@ public class MenuServiceImpl implements MenuService {
 					}
 				}
 
+				// Convert DTO to Menu Entity
 				Menu newMenu = menuMapper.toEntity(menuDTO);
 				
 				// if parentMenuId(pid) is null then define it as a root menu
 				if (menuDTO.getpId() != null) {
+					
+					// Get parent menu by parent menu id
 					Optional<Menu> menuOp = menuRepository.findById(menuDTO.getpId());
+					
+					// set parent menu if given
 					newMenu.setParentMenu(menuOp.isPresent() ? menuOp.get() : null);
 				} else {
 					newMenu.setParentMenu(null);
@@ -146,24 +173,33 @@ public class MenuServiceImpl implements MenuService {
 
 				Optional<Menu> menuToUpdate = menuRepository.findById(menuDTO.getMenuId());
 				
+				// If found menu by id then update its name, userType and parent.
 				menuToUpdate.ifPresent(existingMenu -> {
+					
+					// Update menu name
 					if (menuDTO.getMenuName() != null) {
 						existingMenu.setMenuName(menuDTO.getMenuName());
 					}
 					
+					// Update menu type
 					if (menuDTO.getUserType() != null) {
 						existingMenu.setUserType(menuDTO.getUserType());
 					}
 					
 					// to update parent menu
 					if (menuDTO.getpId() != null) {
+						
+						// get a parent menu by parent menuId
 						Optional<Menu> menuOp = menuRepository.findById(menuDTO.getpId());
+						
+						// update parent menu
 						existingMenu.setParentMenu(menuOp.isPresent() ? menuOp.get() : null);	
 					}
 					else {
 						existingMenu.setParentMenu(null);
 					}
 					
+					// set order id for sorting
 					existingMenu.setOrderId(menuDTO.getOrderId());
 				});
 				
@@ -171,6 +207,7 @@ public class MenuServiceImpl implements MenuService {
 			}
 		}
 		
+		// Create or update all menus
 		List<Menu> updatedMenus = menuRepository.saveAll(menuToUpdateList);
 		
 		// convert saved menus to menuDTOs
@@ -192,6 +229,7 @@ public class MenuServiceImpl implements MenuService {
 
 		Optional<Menu> menu = menuRepository.findById(menuId);
 
+		// If found menu then delete its notes and subfolders
 		menu.ifPresent(menu1 -> {
 
 			// 1. delete all items inside the menu
@@ -214,43 +252,4 @@ public class MenuServiceImpl implements MenuService {
 
 		});
 	}
-
-	// /**
-//     * Delete the menu by user.
-//     *
-//     * @param principal the logged in user.
-//     */
-//	@Override
-//	public void deleteByUser(Principal principal) {
-//		log.debug("Request to delete menu with logged in user");
-//		
-//		User user = userRepository.findByUserName(principal.getName());
-//
-//		List<Menu> menus = menuRepository.findAllByUser(user);
-//		if (!menus.isEmpty()) {
-//			menus.forEach(menu -> {
-//				
-//				// 1. delete all items inside the menu
-//				List<Item> itemsByMenu = itemRepository.findAllByMenu(menu);
-//				log.info("Deleting all the items inside menu with menuId : {}", menu.getMenuId());
-//				// delete these items
-//				itemsByMenu.forEach(item -> {
-//					itemRepository.deleteById(item.getItemId());
-//				});
-//
-//				// 2. delete all menus inside the menu
-//				List<Menu> menusByParentMenu = menuRepository.findAllByParentMenu(menu);
-//				log.info("Deleting all the menus inside menu with menuId : {}", menu.getMenuId());
-//				// delete these menus + items
-//				menusByParentMenu.forEach(menuByParentMenu -> {
-//					this.delete(menuByParentMenu.getMenuId(), principal);
-//				});
-//				// 3. then delete menu
-//				menuRepository.deleteByUser(user);
-//				
-//			});
-//		}
-//
-//	}
-
 }

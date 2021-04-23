@@ -8,6 +8,14 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+* The BadRequestAlertException defines custom bad request exeption 
+* that sets custom error page to redirect on exeption
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 public class BadRequestAlertException extends AbstractThrowableProblem {
 
     private static final long serialVersionUID = 1L;

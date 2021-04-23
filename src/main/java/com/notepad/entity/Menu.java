@@ -10,6 +10,13 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+* The Menu entity to align folder info with DB
+*
+* @author  Zohaib Ali
+* @version 1.0
+* @since   2021-04-22 
+*/
 @Entity
 @Table(name = "pre_xiaomy_cus_todo_menu")
 public class Menu implements Serializable {
