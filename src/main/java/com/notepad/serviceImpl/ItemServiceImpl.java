@@ -48,18 +48,12 @@ public class ItemServiceImpl implements ItemService {
 	@Autowired
 	private MenuRepository menuRepository;
 
-	/**
-	 * Method to save or update new item/items
-	 *
-	 * @param List<ItemDTO> : list of items to create or update.
-	 * @return the list of saved or updated items.
-	 * 
-	 */
+
 	@Override
 	public List<ItemDTO> save(List<ItemDTO> itemDTOs, Principal principal) {
 		log.info("Request to create item : {} ", itemDTOs);
 
-		// newItems to return saved items
+
 		List<ItemDTO> newItems = new ArrayList<ItemDTO>();
 		
 		// itemToUpdateList to update list of items
