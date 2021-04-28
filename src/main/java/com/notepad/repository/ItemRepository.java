@@ -21,8 +21,22 @@ import com.notepad.entity.Menu;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	List<Item> findAllByMenu(Menu menu);
+<<<<<<< Updated upstream
 	
 	List<Item> findAllByMenuOrderByOrderId(Menu menu);
 	
 	List<Item> findAllByUserAndMenu(User user,Menu menu);
+=======
+
+
+
+	List<Item> findAllByMenuOrderByOrderId(Menu menu);
+
+
+
+	List<Item> findAllByUserAndMenu(User user,Menu menu);
+
+
+
+>>>>>>> Stashed changes
 }
