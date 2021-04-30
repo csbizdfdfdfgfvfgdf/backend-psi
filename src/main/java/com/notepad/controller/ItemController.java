@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiOperation;
 */
 @Api(value="Notes", description="Operations pertaining to notes")
 @RestController
-//@RequestMapping("/api")
+
 @CrossOrigin
 public class ItemController {
 

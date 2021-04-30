@@ -29,6 +29,10 @@ import com.notepad.repository.TokenRepository;
 import com.notepad.repository.UserRepository;
 import com.notepad.service.UserService;
 
+
+
+
+
 /**
 * The UserServiceImpl implements UserService and UserDetailsService that
 * Get, Save, Update or Deletes Folders(Menus)
@@ -37,6 +41,7 @@ import com.notepad.service.UserService;
 * @version 1.0
 * @since   2021-04-22 
 */
+
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 	
@@ -53,6 +58,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+
+
+
+
 
 	/**
      * Get user by the username.
@@ -74,6 +84,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(),
 				new ArrayList<>());
 	}
+
+
+
+
+
 
 	/**
      * to save a new user
@@ -123,11 +138,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		return userMapper.toDTO(user);
 	}
 
+
+
+
+
+
+
 	/**
      * Get all the users.
      *
      * @return the list of all users.
      */
+
 	@Override
 	public List<UserDTO> findAll() {
 		log.info("Request to get all Users");
@@ -145,12 +167,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		return userDTOs;
 	}
 
+
+
+
+
+
 	/**
      * Get user with the username.
      *
      * @param userName the userName of entity
      * @return the entity with userName.
      */
+
 	@Override
 	public UserDTO findByUserName(String userName) {
 		log.info("Request to find user by username: {}",userName);
@@ -168,12 +196,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		}
 	}
 
+
+
+
+
+
 	/**
      * to save a password reset token
      *
      * @param token : token to be stored.
      * @param user : the user to link with token.
      */
+
 	@Override
 	public void saveTokenForUser(String tokenString, User user) {
 		log.info("Request to save token: {}",tokenString);
@@ -195,12 +229,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		
 	}
 
+
+
+
+
+
 	/**
      * to validate token and reset the password for a user
      *
      * @param tokenAndPasswordDTO : dto with token to be validated and password to be reset.
      * @param user : the user to link with token.
      */
+
 	@Override
 	public void resetPassword(TokenAndPasswordDTO tokenAndPasswordDTO) {
 		log.info("Request to validate token and save the reset password for a user");
@@ -234,6 +274,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		}
 	}
 
+
+
+
+
+
 	/**
      * validate and check the token expiry
      * @param tokenAndPasswordDTO : dto with token to be validated.
@@ -241,6 +286,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
      * 
      * @return true if token is valid and not expired, false otherwise
      */
+
 	private boolean validateToken(TokenAndPasswordDTO tokenAndPasswordDTO, Token token) {
 		log.info("Checking if token is not null & not expired!");
 		if (!tokenAndPasswordDTO.getToken().equals(null)) {
