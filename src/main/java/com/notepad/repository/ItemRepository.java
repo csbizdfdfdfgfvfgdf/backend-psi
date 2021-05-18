@@ -26,7 +26,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
 	List<Item> findAllByUserAndMenu(User user, Menu menu);
 
-	List<Item> findAllByMenuOrderByOrderId(Menu menu);
+	
 
 	List<Item> findAllByUserAndMenu(User user, Menu menu);
 
