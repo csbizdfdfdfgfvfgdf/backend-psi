@@ -16,28 +16,28 @@ import java.util.List;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
-  @Override
-  public void configureMessageBroker(MessageBrokerRegistry config) {
-    config.enableSimpleBroker("/topic","/queue", "/user");
-    config.setApplicationDestinationPrefixes("/app");
-  }
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic", "/queue", "/user");
+        config.setApplicationDestinationPrefixes("/app");
+    }
 
-  @Override
-  public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry
-            .addEndpoint("/web-socket")
-            .setAllowedOrigins("*")
-            .withSockJS();
-  }
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry
+                .addEndpoint("/web-socket")
+                .setAllowedOrigins("*")
+                .withSockJS();
+    }
 
-  @Override
-  public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-    DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
-    resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
-    MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-    converter.setObjectMapper(new ObjectMapper());
-    converter.setContentTypeResolver(resolver);
-    messageConverters.add(converter);
-    return false;
-  }
+    @Override
+    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+        DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
+        resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.setObjectMapper(new ObjectMapper());
+        converter.setContentTypeResolver(resolver);
+        messageConverters.add(converter);
+        return false;
+    }
 }
