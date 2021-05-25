@@ -1,8 +1,11 @@
 package com.notepad.redis.repoImpl;
 
-import java.util.Map;
-import java.util.UUID;
-
+import com.notepad.entity.User;
+import com.notepad.entity.enumeration.UserType;
+import com.notepad.error.UsernameAlreadyUsedException;
+import com.notepad.redis.model.RedisUser;
+import com.notepad.redis.repo.RedisUserRepo;
+import com.notepad.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +14,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
-import com.notepad.entity.User;
-import com.notepad.entity.enumeration.UserType;
-import com.notepad.error.UsernameAlreadyUsedException;
-import com.notepad.redis.model.RedisUser;
-import com.notepad.redis.repo.RedisUserRepo;
-import com.notepad.repository.UserRepository;
+import java.util.Map;
+import java.util.UUID;
 
 /**
 * The RedisUserRepositoryImpl implements RedisUserRepo that

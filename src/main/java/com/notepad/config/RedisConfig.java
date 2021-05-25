@@ -1,14 +1,10 @@
 package com.notepad.config;
 
-import java.net.URISyntaxException;
-
+import com.notepad.redis.model.RedisUser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
-
-import com.notepad.redis.model.RedisUser;
 
 /**
 * The RedisConfig class sets the connection factory and

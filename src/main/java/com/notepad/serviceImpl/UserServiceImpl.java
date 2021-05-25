@@ -1,25 +1,12 @@
 package com.notepad.serviceImpl;
 
-import static com.notepad.util.Utility.isValidPassword;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
+import com.notepad.config.UserPrincipal;
+import com.notepad.controller.request.CreateUserRequest;
 import com.notepad.dto.TokenAndPasswordDTO;
 import com.notepad.dto.UserDTO;
 import com.notepad.entity.Token;
 import com.notepad.entity.User;
+import com.notepad.entity.enumeration.UserType;
 import com.notepad.error.BadRequestAlertException;
 import com.notepad.error.EmailAlreadyUsedException;
 import com.notepad.error.InvalidPasswordException;
@@ -28,9 +15,22 @@ import com.notepad.mapper.UserMapper;
 import com.notepad.repository.TokenRepository;
 import com.notepad.repository.UserRepository;
 import com.notepad.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
-
+import static com.notepad.util.Utility.isValidPassword;
 
 
 /**
@@ -65,24 +65,43 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
 	/**
-     * Get user by the username.
+     * Get user by the email.
      * 
      * method to be used to generate JWT.
      *
-     * @param username the userName of entity
+     * @param email the userName of entity
      * @return the entity with userName.
      */
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		log.info("Request to load user by username : {} ", username);
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		log.info("Request to load user by email : {} ", email);
 		
 		// get user by user name
-		User user = userRepository.findByUserName(username);
-		if (user == null) {
+		Optional<User> user = userRepository.findOneByEmail(email);
+		if (!user.isPresent()){
+			throw new BadRequestAlertException("User not found with username: " + email, null, null);
+		}
+//		return new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(),
+//				new ArrayList<>());
+		return new UserPrincipal(user.get());
+	}
+
+	/**
+     * uuid visitor flow flow : get user by user name
+	 * @param username
+     * @return
+     * @throws UsernameNotFoundException
+	 */
+
+	public UserDetails loadUserByDbUsername(String username) throws UsernameNotFoundException {
+		log.info("Request to load user by username : {} ", username);
+
+		// get user by user name
+		Optional<User> user = userRepository.findOneByUserName(username);
+		if (!user.isPresent()){
 			throw new BadRequestAlertException("User not found with username: " + username, null, null);
 		}
-		return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(),
-				new ArrayList<>());
+		return new UserPrincipal(user.get());
 	}
 
 
@@ -204,7 +223,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	/**
      * to save a password reset token
      *
-     * @param token : token to be stored.
+     * @param tokenString : token to be stored.
      * @param user : the user to link with token.
      */
 
@@ -238,7 +257,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
      * to validate token and reset the password for a user
      *
      * @param tokenAndPasswordDTO : dto with token to be validated and password to be reset.
-     * @param user : the user to link with token.
      */
 
 	@Override
@@ -254,7 +272,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		Token token = tokenRepository.findByTokenAndStatus(tokenAndPasswordDTO.getToken(), true);
 		
 		// if token is valid and not exprired and email matches to the user that is assigned the token
-		if(this.validateToken(tokenAndPasswordDTO, token) && 
+		if(token != null && this.validateToken(tokenAndPasswordDTO, token) &&
 				token.getUser().getEmail().equalsIgnoreCase(tokenAndPasswordDTO.getEmail())) {
 			
 			// get user by email
@@ -271,6 +289,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				token.setStatus(false);
 				tokenRepository.save(token);
 			});
+		} else {
+			throw new RuntimeException("Token or email is invalid");
 		}
 	}
 
@@ -289,27 +309,36 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 	private boolean validateToken(TokenAndPasswordDTO tokenAndPasswordDTO, Token token) {
 		log.info("Checking if token is not null & not expired!");
-		if (!tokenAndPasswordDTO.getToken().equals(null)) {
-			if (token != null) {
+
+		boolean flag = false;
+		if (tokenAndPasswordDTO.getToken() != null) {
 				Date date = new Date();
 				long timeNow = date.getTime();
-				
 				// if token expiry date is pending then return true
-				if (timeNow<=token.getExpiryDate()) {
-					return true;
-				} else {
-					log.info("token is expired!");
-					return false;
+				if (timeNow <= token.getExpiryDate()) {
+					flag = true;
 				}
-			} else {
-				log.info("no token entity found!");
-				return false;
-			}
-		} else {
-			log.info("no token found in tokenAndPasswordDTO");
-			return false;
+
 		}
-		
+		return flag;
 	}
-	
+
+	/**
+	 *
+	 * @param createUserRequest
+	 * @return uuid
+	 */
+	@Override
+	public void createUser(CreateUserRequest createUserRequest) {
+		UserDTO userDTO = new UserDTO();
+		BeanUtils.copyProperties(createUserRequest,userDTO);
+		userDTO.setUserType(UserType.REGISTERED);
+		save(userDTO);
+	}
+
+
+	@Override
+	public User findByEmail(String email) {
+		return userRepository.findOneByEmail(email.toLowerCase()).get();
+	}
 }

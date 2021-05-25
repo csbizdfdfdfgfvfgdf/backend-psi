@@ -1,8 +1,8 @@
 package com.notepad.redis.repo;
 
-import java.util.Map;
-
 import com.notepad.redis.model.RedisUser;
+
+import java.util.Map;
 
 /**
 * The RedisUserRepo to define operations related to redis user

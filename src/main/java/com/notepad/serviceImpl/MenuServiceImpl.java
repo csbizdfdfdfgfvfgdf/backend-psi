@@ -1,16 +1,6 @@
 package com.notepad.serviceImpl;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.notepad.dto.ItemDTO;
+import com.notepad.config.UserPrincipal;
 import com.notepad.dto.MenuDTO;
 import com.notepad.entity.Item;
 import com.notepad.entity.Menu;
@@ -21,6 +11,14 @@ import com.notepad.repository.ItemRepository;
 import com.notepad.repository.MenuRepository;
 import com.notepad.repository.UserRepository;
 import com.notepad.service.MenuService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
 * The MenuServiceImpl implements MenuService that
@@ -54,14 +52,14 @@ public class MenuServiceImpl implements MenuService {
 	 * @return the list of menus.
 	 */
 	@Override
-	public List<MenuDTO> findAllByLoggedInUser(Principal principal) {
+	public List<MenuDTO> findAllByLoggedInUser(UserPrincipal principal) {
 		log.info("Request to get all Menus(Folders) by logged in user");
 		
 		// menuDTOs list to return all menus
 		List<MenuDTO> menuDTOs = new ArrayList<>();
 
 		// get logged in user
-		User user = userRepository.findByUserName(principal.getName());
+		User user = userRepository.findByUserName(principal.getDbUserName());
 
 		if (user != null) {
 			
@@ -86,13 +84,13 @@ public class MenuServiceImpl implements MenuService {
 	 * @return the list of menus.
 	 */
 	@Override
-	public List<MenuDTO> findAllMenusByParentMenuAndUser(Long menuId, Principal principal) {
+	public List<MenuDTO> findAllMenusByParentMenuAndUser(Long menuId, UserPrincipal principal) {
 
 		// menuDTOs to return all menus
 		List<MenuDTO> menuDTOs = new ArrayList<>();
 
 		// get logged in user
-		User user = userRepository.findByUserName(principal.getName());
+		User user = userRepository.findByUserName(principal.getDbUserName());
 
 		if (user != null) {
 			
@@ -123,7 +121,7 @@ public class MenuServiceImpl implements MenuService {
 	 * 
 	 */
 	@Override
-	public List<MenuDTO> save(List<MenuDTO> menuDTOs, Principal principal) {
+	public List<MenuDTO> save(List<MenuDTO> menuDTOs, UserPrincipal principal) {
 		log.info("Request to create/ update menu : {} ", menuDTOs);
 
 		// newItems to return saved items
@@ -136,7 +134,7 @@ public class MenuServiceImpl implements MenuService {
 			
 			// to create new menu
 			if (menuDTO.getMenuId() == null) {
-				User user = userRepository.findByUserName(principal.getName());
+				User user = userRepository.findByUserName(principal.getDbUserName());
 				if (user != null) {
 					// set user to menu
 					menuDTO.setuId(user.getUserId());
@@ -224,7 +222,7 @@ public class MenuServiceImpl implements MenuService {
 	 * @param menuId the id of the entity.
 	 */
 	@Override
-	public void delete(Long menuId, Principal principal) {
+	public void delete(Long menuId, UserPrincipal principal) {
 		log.debug("Request to delete menu with id : {}", menuId);
 
 		Optional<Menu> menu = menuRepository.findById(menuId);

@@ -1,9 +1,8 @@
 package com.notepad.mapper;
 
-import org.mapstruct.Mapper;
-
 import com.notepad.dto.UserDTO;
 import com.notepad.entity.User;
+import org.mapstruct.Mapper;
 
 /**
 * The UserMapper that uses mapstruct library to convert

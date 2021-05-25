@@ -1,16 +1,11 @@
 package com.notepad.service;
 
-import java.nio.charset.StandardCharsets;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
+import com.notepad.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -18,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import com.notepad.entity.User;
+import javax.mail.internet.MimeMessage;
 
 /**
 * The MailService to get mail configurations and send mail
@@ -52,7 +47,7 @@ public class MailService {
 	 * Async method to send password reset mail.
 	 *
 	 * @param user to send mail
-	 * @param passwordResetUrl to send mail at
+	 * @param passwordResetURL to send mail at
 	 */
 	@Async
     public void sendPasswordResetMail(User user, String passwordResetURL) {
@@ -64,7 +59,7 @@ public class MailService {
 	 * Async method to send email from provided template.
 	 *
 	 * @param user to send mail
-	 * @param passwordResetUrl to send mail at
+	 * @param passwordResetURL to send mail at
 	 * @param templateName template of the mail
 	 * @param titleKey to get subject of the mail
 	 */
@@ -108,7 +103,7 @@ public class MailService {
         try {
         	
         	// build message to set mail
-            MimeMessageHelper message = new MimeMessageHelper(mimeMessage, isMultipart, StandardCharsets.UTF_8.name());
+            MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
             message.setTo(to);
             message.setFrom(mailFrom);
             message.setSubject(subject);
@@ -117,9 +112,36 @@ public class MailService {
             // send email
             javaMailSender.send(mimeMessage);
             log.info("Sent email to User '{}'", to);
-        }  catch (MailException | MessagingException e) {
-            log.warn("Email could not be sent to user '{}'", to, e);
+        }  catch (Exception e) {
+            log.error("Email could not be sent to user '{}'", to, e);
         }
     }
-	
+
+    /**
+     * user registration email
+     * @param user
+     */
+    @Async
+    public void registerEmail(User user) {
+        log.info("Registration email sent to '{}'", user.getEmail());
+        sendEmailFromTemplate(user, "mail/register-email", "email.register.title");
+    }
+
+    /**
+     * registration email template
+     * @param user
+     * @param templateName
+     * @param titleKey
+     */
+    private void sendEmailFromTemplate(User user, String templateName, String titleKey) {
+        Context context = new Context();
+        context.setVariable(USER, user);
+
+        // set values in template using context
+        String content = templateEngine.process(templateName, context);
+        String subject = messageSource.getMessage(titleKey, null, null);
+
+        // send email
+        sendEmail(user.getEmail(), subject, content, false, true);
+    }
 }

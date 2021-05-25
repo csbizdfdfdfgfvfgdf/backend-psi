@@ -1,17 +1,6 @@
 package com.notepad.serviceImpl;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.stereotype.Service;
-
+import com.notepad.config.UserPrincipal;
 import com.notepad.dto.ItemDTO;
 import com.notepad.entity.Item;
 import com.notepad.entity.Menu;
@@ -22,6 +11,16 @@ import com.notepad.repository.ItemRepository;
 import com.notepad.repository.MenuRepository;
 import com.notepad.repository.UserRepository;
 import com.notepad.service.ItemService;
+import com.notepad.service.ItemWebSocketService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
 * The ItemServiceImpl implements ItemService that
@@ -48,10 +47,16 @@ public class ItemServiceImpl implements ItemService {
 	@Autowired
 	private MenuRepository menuRepository;
 
+	@Autowired
+	private ItemWebSocketService itemWebSocketService;
+
 
 	@Override
-	public List<ItemDTO> save(List<ItemDTO> itemDTOs, Principal principal) {
+	public List<ItemDTO> save(List<ItemDTO> itemDTOs, UserPrincipal principal) {
 		log.info("Request to create item : {} ", itemDTOs);
+
+		// for websocket logic
+		boolean isNewItem= true;
 
 
 		List<ItemDTO> newItems = new ArrayList<ItemDTO>();
@@ -66,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
 			if (itemDTO.getItemId() == null) {
 				
 				// get logged in user
-				User user = userRepository.findByUserName(principal.getName());
+				User user = userRepository.findByUserName(principal.getDbUserName());
 				
 				if (user != null) {
 					// set user to item
@@ -91,7 +96,7 @@ public class ItemServiceImpl implements ItemService {
 				
 			} else {
 				// to update item
-				
+				isNewItem = false; // for websocket logic
 				// get item to update by item id
 				Optional<Item> itemToUpdate = itemRepository.findById(itemDTO.getItemId());
 				
@@ -142,6 +147,14 @@ public class ItemServiceImpl implements ItemService {
 		for(Item updatedItem: updatedItems) {
 			newItems.add(itemMapper.toDTO(updatedItem));
 		}
+
+		if(!newItems.isEmpty()) {
+			if(isNewItem){
+				itemWebSocketService.sendData(newItems.get(0),"ADD",principal.getDbUserName());
+			} else {
+				itemWebSocketService.sendData(newItems.get(0),"UPDATE",principal.getDbUserName());
+			}
+		}
 		
 		return newItems;
 	}
@@ -152,11 +165,12 @@ public class ItemServiceImpl implements ItemService {
 	 * @param itemId the id of the entity.
 	 */
 	@Override
-	public void delete(Long itemId) {
+	public void delete(Long itemId,UserPrincipal userPrincipal) {
 		log.info("Request to delete item with id : {} ", itemId);
-		
+		ItemDTO itemDTO = itemMapper.toDTO(itemRepository.getOne(itemId));
 		// delete item by item id
 		itemRepository.deleteById(itemId);
+		itemWebSocketService.sendData(itemDTO,"UPDATE",userPrincipal.getDbUserName());
 	}
 
 	/**
@@ -195,14 +209,14 @@ public class ItemServiceImpl implements ItemService {
 	 * @return the list of items.
 	 */
 	@Override
-	public List<ItemDTO> findAllByUserId(Principal principal) {
+	public List<ItemDTO> findAllByUserId(UserPrincipal principal) {
 		log.info("Request to find all items with userId : {} ");
 		
 		// itemDTOs list to retuen all items of a user
 		List<ItemDTO> itemDTOs = new ArrayList<>();
 		
 		// get logged in user by name
-		User user = userRepository.findByUserName(principal.getName());
+		User user = userRepository.findByUserName(principal.getDbUserName());
 		if (user != null) {
 			
 			// get user by id

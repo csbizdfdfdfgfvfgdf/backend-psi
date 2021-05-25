@@ -1,9 +1,9 @@
 package com.notepad.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-
-import io.swagger.annotations.ApiModelProperty;
 
 /**
 * The ItemDTO to store a note info
@@ -43,10 +43,8 @@ public class ItemDTO implements Serializable {
 	@ApiModelProperty(value = "The updated date of a note")
 	private LocalDateTime updated;
 
-
-
-
-
+	private String type;
+	
 	public Long getItemId() {
 		return itemId;
 	}
@@ -110,7 +108,15 @@ public class ItemDTO implements Serializable {
 	public void setUpdated(LocalDateTime updated) {
 		this.updated = updated;
 	}
-	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	@Override
 	public String toString() {
 		return "ItemDTO [itemId=" + itemId + ", content=" + content + ", orderId=" + orderId + ", uId=" + uId

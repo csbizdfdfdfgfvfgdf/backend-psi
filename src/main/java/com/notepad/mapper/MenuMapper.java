@@ -1,10 +1,9 @@
 package com.notepad.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
 import com.notepad.dto.MenuDTO;
 import com.notepad.entity.Menu;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
 * The MenuMapper that uses mapstruct library to convert

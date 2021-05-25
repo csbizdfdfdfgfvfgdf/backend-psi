@@ -1,7 +1,7 @@
 package com.notepad.config;
 
-import java.util.Arrays;
-
+import com.notepad.jwt.config.JwtAuthenticationEntryPoint;
+import com.notepad.jwt.config.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,17 +21,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import com.notepad.jwt.config.JwtAuthenticationEntryPoint;
-import com.notepad.jwt.config.JwtRequestFilter;
+import java.util.Arrays;
 
 /**
-* The WebSecurityConfig class sets security on the app using spring security
-* by overriding WebSecurityConfigurerAdapter methods.
-*
-* @author  Zohaib Ali
-* @version 1.0
-* @since   2021-04-22 
-*/
+ * The WebSecurityConfig class sets security on the app using spring security
+ * by overriding WebSecurityConfigurerAdapter methods.
+ *
+ * @author  Zohaib Ali
+ * @version 1.0
+ * @since   2021-04-22
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -45,7 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	// Custom filter for authenticatin user by username and token
 	@Autowired
 	private JwtRequestFilter jwtRequestFilter;
-	
+
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		// configure AuthenticationManager so that it knows from where to load
@@ -66,24 +66,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-     * Adds security on paths that are accessible. Few pages are public and
-     * others are first authenticated.
-     *
-     * @param httpSecurity
-     */
+	 * Adds security on paths that are accessible. Few pages are public and
+	 * others are first authenticated.
+	 *
+	 * @param httpSecurity
+	 */
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		// We don't need CSRF for this example
 		httpSecurity.cors().and().csrf().disable()
 				.authorizeRequests().antMatchers(
-						"/authenticate", 
-						"/register","/ws", "/test", "/auth/makeUuid", "/auth/retrievePwd", "/auth/resetPwd", "/redis-users/**",
-						"/v2/api-docs",
-                        "/configuration/ui",
-                        "/swagger-resources/**",
-                        "/configuration/security",
-                        "/swagger-ui.html",
-                        "/webjars/**").permitAll().
+				"/authenticate",
+				"/register","/ws","/ws/**", "/test", "/auth/makeUuid", "/auth/forget-password", "/auth/change-password",
+				"/sign-up","/refresh-token", "/redis-users/**",
+				"/v2/api-docs",
+				"/configuration/ui",
+				"/swagger-resources/**",
+				"/configuration/security",
+				"/swagger-ui.html",
+				//"/","/index.html","index.html","/index",
+				"/web-socket","/web-socket/**",
+				"/webjars/**").permitAll().
 				// all other requests need to be authenticated
 						anyRequest().authenticated().and().
 				// make sure we use stateless session; session won't be used to
@@ -94,31 +97,39 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.invalidateHttpSession(true);
 
 		// Add a filter to validate the tokens with every request
-		
+
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
-	
+
 	/**
-     * Adds cross origins from which the request is allowed
-     *
-     * @return CorsFilter.
-     */
+	 * Adds cross origins from which the request is allowed
+	 *
+	 * @return CorsFilter.
+	 */
 	@Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source =
-            new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList(
-        		"https://www.ppssii.com",
-        		"https://ppssii.com", 
-        		"https://localhost:4200", 
-        		"http://localhost:4200", 
-        		"http://52.88.158.96:4200",
-        		"https://52.88.158.96:4200"));
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new org.springframework.web.filter.CorsFilter(source);
-    }
+	public CorsFilter corsFilter() {
+		UrlBasedCorsConfigurationSource source =
+				new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(true);
+		config.setAllowedOrigins(Arrays.asList(
+				"https://www.ppssii.com",
+				"https://ppssii.com",
+				"https://localhost:4200",
+				"http://localhost:4200",
+				"http://localhost:8080",
+				"http://52.88.158.96:4200",
+				"https://52.88.158.96:4200"));
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("*");
+		source.registerCorsConfiguration("/**", config);
+		return new org.springframework.web.filter.CorsFilter(source);
+	}
+
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web
+				.ignoring()
+				.antMatchers("/resources/**","/resources/static/**","/static/**"); // #3
+	}
 }

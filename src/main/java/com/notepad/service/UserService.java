@@ -1,10 +1,11 @@
 package com.notepad.service;
 
-import java.util.List;
-
+import com.notepad.controller.request.CreateUserRequest;
 import com.notepad.dto.TokenAndPasswordDTO;
 import com.notepad.dto.UserDTO;
 import com.notepad.entity.User;
+
+import java.util.List;
 
 /**
 * The UserService interface defines the operations to be performed related to users
@@ -24,5 +25,9 @@ public interface UserService {
 	void saveTokenForUser(String token, User user);
 
 	void resetPassword(TokenAndPasswordDTO tokenAndPasswordDTO);
+
+	void createUser(CreateUserRequest createUserRequest);
+
+	User findByEmail(String email);
 
 }

@@ -1,9 +1,8 @@
 package com.notepad.repository;
 
+import com.notepad.entity.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.notepad.entity.Token;
 
 /**
 * The TokenRepository that extends JpaRepository

@@ -1,9 +1,9 @@
 package com.notepad.service;
 
-import java.security.Principal;
-import java.util.List;
-
+import com.notepad.config.UserPrincipal;
 import com.notepad.dto.MenuDTO;
+
+import java.util.List;
 
 /**
 * The MenuService interface defines the operations to be performed related to folders
@@ -14,12 +14,12 @@ import com.notepad.dto.MenuDTO;
 */
 public interface MenuService {
 
-	List<MenuDTO> save(List<MenuDTO> menuDTO, Principal principal);
+	List<MenuDTO> save(List<MenuDTO> menuDTO, UserPrincipal principal);
 
-	void delete(Long menuId, Principal principal);
+	void delete(Long menuId, UserPrincipal principal);
 
-	List<MenuDTO> findAllByLoggedInUser(Principal principal);
+	List<MenuDTO> findAllByLoggedInUser(UserPrincipal principal);
 
-	List<MenuDTO> findAllMenusByParentMenuAndUser(Long menuId, Principal principal);
+	List<MenuDTO> findAllMenusByParentMenuAndUser(Long menuId, UserPrincipal principal);
 
 }

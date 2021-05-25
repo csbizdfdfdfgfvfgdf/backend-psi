@@ -1,10 +1,9 @@
 package com.notepad.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
 import com.notepad.dto.ItemDTO;
 import com.notepad.entity.Item;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
 * The ItemMapper that uses mapstruct library to convert

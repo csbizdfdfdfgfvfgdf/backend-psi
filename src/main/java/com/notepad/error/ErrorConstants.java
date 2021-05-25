@@ -19,7 +19,7 @@ public final class ErrorConstants {
     public static final URI INVALID_PASSWORD_TYPE = URI.create(PROBLEM_BASE_URL + "/invalid-password");
     public static final URI EMAIL_ALREADY_USED_TYPE = URI.create(PROBLEM_BASE_URL + "/email-already-used");
     public static final URI USERNAME_ALREADY_USED_TYPE = URI.create(PROBLEM_BASE_URL + "/username-already-used");
-
+    public static final URI INVALID_REFRESH_TOKEN_TYPE = URI.create(PROBLEM_BASE_URL + "/invalid-refresh-token");
     private ErrorConstants() {
     	
     }

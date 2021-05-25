@@ -1,8 +1,8 @@
 package com.notepad.dto;
 
-import java.io.Serializable;
-
 import io.swagger.annotations.ApiModelProperty;
+
+import java.io.Serializable;
 
 /**
 * The MenuDTO to store a folder info
