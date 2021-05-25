@@ -87,7 +87,8 @@ public class JwtAuthenticationController {
      * @return the {@link ResponseEntity} with status {@code 200} and with body token.
      * @throws BadRequestAlertEception if the Location URI syntax is incorrect.
      */
-	@RequestMapping(value = "/authenticate-with-uuid", method = RequestMethod.POST)
+
+	/*@RequestMapping(value = "/authenticate-with-uuid", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationTokenForVisitor(@RequestBody RedisUser redisUser) throws Exception {
 
 		// check to redisDB for authentication!
@@ -107,7 +108,9 @@ public class JwtAuthenticationController {
 			throw new BadRequestAlertException("Bad credentials or UUID! ", null, null);
 		}
 
-	}
+	}*/
+
+
 
 	/**
      * {@code POST  /register} : change visitor user to registered user

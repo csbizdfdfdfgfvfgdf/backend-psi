@@ -104,13 +104,15 @@ public class UserController {
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
 	 *         of users in body.
 	 */
-	@GetMapping("/users")
+
+	/*@GetMapping("/users")
 	@ApiOperation(value = "Returns list of all users")
 	public ResponseEntity<List<UserDTO>> getAllUsers() {
 		log.info("Rest request to get all users");
 		List<UserDTO> userDTOs = userService.findAll();
 		return ResponseEntity.ok().body(userDTOs);
 	}
+*/
 
 	/**
 	 * {@code POST /auth/retrievePwd} : send a password reset link to email id
