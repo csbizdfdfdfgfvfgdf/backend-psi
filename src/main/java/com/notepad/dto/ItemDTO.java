@@ -42,7 +42,11 @@ public class ItemDTO implements Serializable {
 	
 	@ApiModelProperty(value = "The updated date of a note")
 	private LocalDateTime updated;
-	
+
+
+
+
+
 	public Long getItemId() {
 		return itemId;
 	}
