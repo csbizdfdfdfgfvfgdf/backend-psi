@@ -31,11 +31,7 @@ public class CreateUserRequest {
     @Email(message = "Email is invalid")
     private String email;
 
-    @JsonIgnore
-    @ApiModelProperty(value = "The phone number of the user")
-//    @NotNull(message = "Please provide phone")
-//    @NotBlank(message = "Please provide phone")
-    private String phone;
+   
 
     @JsonIgnore
     private UserType userType;
