@@ -1,5 +1,6 @@
 package com.notepad.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.notepad.entity.enumeration.UserType;
@@ -29,6 +30,7 @@ public class UserDTO implements Serializable {
 	private String userName;
 	@ApiModelProperty(value = "The email id of the user")
 	private String email;
+	@JsonIgnore
 	@ApiModelProperty(value = "The phone number of the user")
 	private String phone;
 	@ApiModelProperty(value = "The type of the user")
