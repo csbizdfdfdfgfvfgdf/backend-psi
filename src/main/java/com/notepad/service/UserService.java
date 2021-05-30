@@ -1,8 +1,9 @@
 package com.notepad.service;
 
 import com.notepad.controller.request.CreateUserRequest;
-import com.notepad.dto.TokenAndPasswordDTO;
+import com.notepad.controller.request.TokenAndPasswordDTO;
 import com.notepad.dto.UserDTO;
+import com.notepad.controller.request.VerifyEmailTokenDTO;
 import com.notepad.entity.User;
 
 import java.util.List;
@@ -22,12 +23,14 @@ public interface UserService {
 
 	UserDTO findByUserName(String userName);
 
-	void saveTokenForUser(String token, User user);
+	void saveTokenForUser(String token, User user, long tokenExpire);
 
 	void resetPassword(TokenAndPasswordDTO tokenAndPasswordDTO);
 
 	void createUser(CreateUserRequest createUserRequest);
 
 	User findByEmail(String email);
+
+	void verifyEmailToken(VerifyEmailTokenDTO verifyEmailTokenDTO);
 
 }

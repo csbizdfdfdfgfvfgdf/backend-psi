@@ -27,7 +27,7 @@ public class CreateUserRequest {
     @ApiModelProperty(value = "The email id of the user")
     @NotNull(message = "Please provide email")
     @NotBlank(message = "Please provide email")
-    @Size(min = 8,max = 30, message = "Email min length is 5 and max length is 30")
+    @Size(min = 8,max = 50, message = "Email min length is 5 and max length is 50")
     @Email(message = "Email is invalid")
     private String email;
 
@@ -40,7 +40,7 @@ public class CreateUserRequest {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull(message = "Please provide password")
     @NotBlank(message = "Please provide password")
-    @Size(min = 8,max = 20, message = "Password min length is 8 and max length is 20")
+    @Size(min = 8,max = 50, message = "Password min length is 8 and max length is 50")
     private String password;
 
     @JsonIgnore

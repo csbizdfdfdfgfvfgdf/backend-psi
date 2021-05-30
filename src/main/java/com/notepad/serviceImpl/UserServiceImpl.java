@@ -2,10 +2,12 @@ package com.notepad.serviceImpl;
 
 import com.notepad.config.UserPrincipal;
 import com.notepad.controller.request.CreateUserRequest;
-import com.notepad.dto.TokenAndPasswordDTO;
+import com.notepad.controller.request.TokenAndPasswordDTO;
 import com.notepad.dto.UserDTO;
+import com.notepad.controller.request.VerifyEmailTokenDTO;
 import com.notepad.entity.Token;
 import com.notepad.entity.User;
+import com.notepad.entity.enumeration.ERole;
 import com.notepad.entity.enumeration.UserType;
 import com.notepad.error.BadRequestAlertException;
 import com.notepad.error.EmailAlreadyUsedException;
@@ -80,9 +82,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		Optional<User> user = userRepository.findOneByEmail(email);
 		if (!user.isPresent()){
 			throw new BadRequestAlertException("User not found with username: " + email, null, null);
+		}else {
+			if(user.get().getEmailVerified() == Boolean.FALSE) {
+				throw new BadRequestAlertException("Email address is not verified: " + email, null, null);
+			}
 		}
-//		return new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(),
-//				new ArrayList<>());
+
+// 	new org.springframework.security.core.userdetails.User(user.get().getEmail(), user.get().getPassword(),
+//			new ArrayList<>());
 		return new UserPrincipal(user.get());
 	}
 
@@ -149,7 +156,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		// convert userDTO to userEntity to store user in DB
 		User userToSave = userMapper.toEntity(userDTO);
 		userToSave.setUserType(userDTO.getUserType());
-		
+
+		if(userToSave.getRoleName() == null)
+			userToSave.setRoleName(ERole.ROLE_USER);
+
 		// save user to DB
 		User user = userRepository.save(userToSave);
 		
@@ -223,24 +233,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	/**
      * to save a password reset token
      *
-     * @param tokenString : token to be stored.
+     * @param tokenValue : token to be stored.
      * @param user : the user to link with token.
+	 * @param tokenExpire :token expire time
      */
-
 	@Override
-	public void saveTokenForUser(String tokenString, User user) {
-		log.info("Request to save token: {}",tokenString);
+	public void saveTokenForUser(String tokenValue, User user, long tokenExpire) {
+		log.info("Request to save token: {}",tokenValue);
 		
 		// Token to link with user
 		Token token = new Token();
-		token.setToken(tokenString);
+		token.setToken(tokenValue);
 		token.setUser(user);
 		token.setStatus(true);
 		
 		// set token expiry time
 		Date date = new Date();
 		long timeNow = date.getTime();
-		long expiryTime = timeNow + Token.getResetPasswordExpiration();
+		long expiryTime = timeNow + tokenExpire;
 		token.setExpiryDate(expiryTime);
 		
 		// save token that is linked to user
@@ -331,6 +341,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	@Override
 	public void createUser(CreateUserRequest createUserRequest) {
 		UserDTO userDTO = new UserDTO();
+		userDTO.setEmailVerified(Boolean.FALSE);
 		BeanUtils.copyProperties(createUserRequest,userDTO);
 		userDTO.setUserType(UserType.REGISTERED);
 		save(userDTO);
@@ -340,5 +351,39 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	@Override
 	public User findByEmail(String email) {
 		return userRepository.findOneByEmail(email.toLowerCase()).get();
+	}
+
+	/**
+	 * Verify email token if token valid , the set true to email verified field
+	 * @param verifyEmailTokenDTO
+	 */
+	@Override
+	public void verifyEmailToken(VerifyEmailTokenDTO verifyEmailTokenDTO) {
+		log.info("Request to validate token and enable verified email");
+
+		// get active token from DB by provided token
+		Token token = tokenRepository.findByTokenAndStatus(verifyEmailTokenDTO.getToken(), true);
+
+		// if token is valid and not exprired and email matches to the user that is assigned the token
+		if(token != null &&
+				token.getUser().getEmail().equalsIgnoreCase(verifyEmailTokenDTO.getEmail())) {
+
+			// get user by email
+			userRepository.findOneByEmail(verifyEmailTokenDTO.getEmail().toLowerCase()).ifPresent(user -> {
+
+				// convert userEntity to userDTO
+				UserDTO userDTO = userMapper.toDTO(user);
+
+				// set updated password to userDTO
+				userDTO.setEmailVerified(Boolean.TRUE);
+				this.save(userDTO);
+
+				// deactivate the token once password is changed
+				token.setStatus(false);
+				tokenRepository.save(token);
+			});
+		} else {
+			throw new RuntimeException("Token or email is invalid");
+		}
 	}
 }

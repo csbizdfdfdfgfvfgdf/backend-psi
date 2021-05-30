@@ -47,6 +47,9 @@ public class UserDTO implements Serializable {
 	private LocalDateTime created;
 	@ApiModelProperty(value = "The updated date of the user")
 	private LocalDateTime updated;
+
+	@JsonIgnore
+	private Boolean emailVerified;
 	
 	public String getConfirmPassword() {
 		return confirmPassword;
@@ -118,6 +121,14 @@ public class UserDTO implements Serializable {
 
 	public void setUserType(UserType userType) {
 		this.userType = userType;
+	}
+
+	public Boolean getEmailVerified() {
+		return emailVerified;
+	}
+
+	public void setEmailVerified(Boolean emailVerified) {
+		this.emailVerified = emailVerified;
 	}
 
 	@Override

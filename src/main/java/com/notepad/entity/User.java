@@ -1,7 +1,9 @@
 package com.notepad.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.notepad.entity.enumeration.ERole;
 import com.notepad.entity.enumeration.UserType;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -37,6 +39,13 @@ public class User implements Serializable {
 	
 	private LocalDateTime created;
 	private LocalDateTime updated;
+
+	@ColumnDefault("0")
+	private Boolean emailVerified;
+
+	@Enumerated(EnumType.STRING)
+	private ERole roleName = ERole.ROLE_USER;
+
 
 	@PrePersist
 	protected void onCreate() {
@@ -110,6 +119,22 @@ public class User implements Serializable {
 
 	public void setUserType(UserType userType) {
 		this.userType = userType;
+	}
+
+	public Boolean getEmailVerified() {
+		return emailVerified;
+	}
+
+	public void setEmailVerified(Boolean emailVerified) {
+		this.emailVerified = emailVerified;
+	}
+
+	public ERole getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(ERole roleName) {
+		this.roleName = roleName;
 	}
 
 	@Override

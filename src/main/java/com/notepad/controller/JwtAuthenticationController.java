@@ -5,6 +5,8 @@ import com.notepad.controller.request.JwtRequest;
 import com.notepad.controller.request.TokenRefreshRequest;
 import com.notepad.controller.response.JwtResponse;
 import com.notepad.dto.ResponseDto;
+import com.notepad.entity.Token;
+import com.notepad.entity.User;
 import com.notepad.jwt.config.JwtTokenUtil;
 import com.notepad.redis.repo.RedisUserRepo;
 import com.notepad.service.MailService;
@@ -31,6 +33,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
 * The JwtAuthenticationController declares the REST APIs for authentications
@@ -139,10 +144,16 @@ public class JwtAuthenticationController {
 	@PostMapping("/sign-up")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", required = false, paramType = "header", dataType = "String", allowEmptyValue = true, readOnly = true)})
-	public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+	public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody CreateUserRequest createUserRequest, HttpServletRequest request) {
 		createUserRequest.setEmail(createUserRequest.getEmail().toLowerCase());
 		userService.createUser(createUserRequest);
-		mailService.registerEmail(userService.findByEmail(createUserRequest.getEmail()));
+		User user = userService.findByEmail(createUserRequest.getEmail());
+		String registerURL = generateEmailTokenWithURL(request, Optional.of(user));
+
+		// send reset password mail
+		mailService.registerEmail(user, registerURL);
+
+	//	mailService.registerEmail(userService.findByEmail(createUserRequest.getEmail()));
 		return ResponseEntity.ok().body(ResponseDto.builder()
 				.status("success").build());
 	}
@@ -180,5 +191,18 @@ public class JwtAuthenticationController {
 			@ApiImplicitParam(name = "Authorization", required = false, paramType = "header", dataType = "String", allowEmptyValue = true, readOnly = true)})
 	public ResponseEntity<JwtResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
 		return ResponseEntity.ok(refreshTokenService.validateAndGenerateRefreshToken(request));
+	}
+
+	private String generateEmailTokenWithURL(HttpServletRequest request, Optional<User> user) {
+		String token = UUID.randomUUID().toString();
+		userService.saveTokenForUser(token, user.get(), Token.getEmailPasswordExpiration());
+
+		// generate URL for mail
+		StringBuffer url = request.getRequestURL();
+		String base = url.substring(0, url.length() - request.getRequestURI().length() + request.getContextPath().length()) + "/";
+
+		// password reset link
+		String emailVerifyURL = base + "verify-email?email=" + user.get().getEmail() + "&token=" + token;
+		return emailVerifyURL;
 	}
 }

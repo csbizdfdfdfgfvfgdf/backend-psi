@@ -59,12 +59,12 @@ public class MailService {
 	 * Async method to send email from provided template.
 	 *
 	 * @param user to send mail
-	 * @param passwordResetURL to send mail at
+	 * @param url to send mail at
 	 * @param templateName template of the mail
 	 * @param titleKey to get subject of the mail
 	 */
 	@Async
-	private void sendEmailFromTemplate(User user, String passwordResetURL, String templateName, String titleKey) {
+	private void sendEmailFromTemplate(User user, String url, String templateName, String titleKey) {
 		if (user.getEmail() == null) {
             log.info("Email doesn't exist for user '{}'", user.getEmail());
             return;
@@ -73,7 +73,7 @@ public class MailService {
 		// create mail context to set values in template
         Context context = new Context();
         context.setVariable(USER, user);
-        context.setVariable(URL, passwordResetURL);
+        context.setVariable(URL, url);
         
         // set values in template using context
         String content = templateEngine.process(templateName, context);
@@ -122,9 +122,9 @@ public class MailService {
      * @param user
      */
     @Async
-    public void registerEmail(User user) {
+    public void registerEmail(User user,String registerUrl) {
         log.info("Registration email sent to '{}'", user.getEmail());
-        sendEmailFromTemplate(user, "mail/register-email", "email.register.title");
+        sendEmailFromTemplate(user, registerUrl, "mail/register-email", "email.register.title");
     }
 
     /**

@@ -10,7 +10,10 @@
             Dear
         </p>
         <p th:text="#{email.register.text1}">
-            For your JHipster account a password reset was requested, please click on the URL below to reset it:
+            text
+        </p>
+        <p>
+            <a th:with="url=(@{|${url}|})" th:href="${url}">Verify Email</a>
         </p>
         <p>
             <span th:text="#{email.reset.text2}">Regards, </span>

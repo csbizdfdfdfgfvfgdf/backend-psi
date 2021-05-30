@@ -16,6 +16,8 @@ public class Token {
 	private static final long RESET_PASSWORD_EXPIRATION = 5*60*1000; // for 5 minutes
 	
 	private static final long VISITOR_EXPIRATION = 24*7*60*60*1000; // for 7 days
+
+	private static final long EMAIL_PASSWORD_EXPIRATION = 60*60*1000; // for 1 hour
 	
 	@Id
     @GeneratedValue
@@ -79,6 +81,10 @@ public class Token {
 
 	public static long getVisitorExpiration() {
 		return VISITOR_EXPIRATION;
+	}
+
+	public static long getEmailPasswordExpiration() {
+		return EMAIL_PASSWORD_EXPIRATION;
 	}
 
 	@Override

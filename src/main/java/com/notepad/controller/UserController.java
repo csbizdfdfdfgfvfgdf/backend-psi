@@ -4,8 +4,10 @@ import com.notepad.config.UserPrincipal;
 import com.notepad.controller.request.ForgetPasswordRequest;
 import com.notepad.controller.response.JwtResponse;
 import com.notepad.dto.ResponseDto;
-import com.notepad.dto.TokenAndPasswordDTO;
+import com.notepad.controller.request.TokenAndPasswordDTO;
 import com.notepad.dto.UserDTO;
+import com.notepad.controller.request.VerifyEmailTokenDTO;
+import com.notepad.entity.Token;
 import com.notepad.entity.User;
 import com.notepad.entity.enumeration.UserType;
 import com.notepad.error.BadRequestAlertException;
@@ -96,6 +98,7 @@ public class UserController {
 		userDTO.setConfirmPassword(uuid);
 		userDTO.setUserType(UserType.VISITOR);
 		userDTO.setEmail(uuid+"@gmail.com");
+		userDTO.setEmailVerified(Boolean.TRUE);
 		userDTORes = userService.save(userDTO);
 		// generate token
 		final String token = jwtTokenUtil.generateToken(userDTO.getEmail());
@@ -142,17 +145,7 @@ public class UserController {
 		} else {
 
 			// generate & save token before sending a mail
-			String token = UUID.randomUUID().toString();
-			userService.saveTokenForUser(token, user.get());
-
-			// generate URL for mail
-			StringBuffer url = request.getRequestURL();
-			String uri = request.getRequestURI();
-			String ctx = request.getContextPath();
-			String base = url.substring(0, url.length() - uri.length() + ctx.length()) + "/";
-
-			// password reset link
-			String passwordResetURL = base + "forget-password?email=" + user.get().getEmail() + "&token=" + token;
+			String passwordResetURL = generatePasswordTokenWithURL(request, user);
 
 			// send reset password mail
 			mailService.sendPasswordResetMail(user.get(), passwordResetURL);
@@ -163,6 +156,21 @@ public class UserController {
 						.status("success")
 						.data("mail sent succesfully to " + user.get().getEmail()).build()
 		);
+	}
+
+	private String generatePasswordTokenWithURL(HttpServletRequest request, Optional<User> user) {
+		String token = UUID.randomUUID().toString();
+		userService.saveTokenForUser(token, user.get(), Token.getResetPasswordExpiration());
+
+		// generate URL for mail
+		StringBuffer url = request.getRequestURL();
+		String uri = request.getRequestURI();
+		String ctx = request.getContextPath();
+		String base = url.substring(0, url.length() - uri.length() + ctx.length()) + "/";
+
+		// password reset link
+		String passwordResetURL = base + "forget-password?email=" + user.get().getEmail() + "&token=" + token;
+		return passwordResetURL;
 	}
 
 	/**
@@ -176,9 +184,29 @@ public class UserController {
 	@PostMapping("/auth/change-password")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", required = false, paramType = "header", dataType = "String", allowEmptyValue = true, readOnly = true)})
-	public ResponseEntity<ResponseDto> validateTokenAndResetPassword(@RequestBody TokenAndPasswordDTO tokenAndPasswordDTO) {
+	public ResponseEntity<ResponseDto> validateTokenAndResetPassword(@Valid @RequestBody TokenAndPasswordDTO tokenAndPasswordDTO) {
 		log.info("Rest request to validate token and change password");
 		userService.resetPassword(tokenAndPasswordDTO);
+		return ResponseEntity.ok().body(
+				ResponseDto.builder()
+						.status("success")
+						.data("").build()
+		);
+	}
+
+
+	/**
+	 * verify email token if valid then market email is verified
+	 * @param tokenAndPasswordDTO
+	 * @return
+	 */
+	@ApiOperation(value = "Validates the token and verify email")
+	@PostMapping("/auth/verify-email")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", required = false, paramType = "header", dataType = "String", allowEmptyValue = true, readOnly = true)})
+	public ResponseEntity<ResponseDto> validateTokenAndVerifyEmail(@Valid @RequestBody VerifyEmailTokenDTO tokenAndPasswordDTO) {
+		log.info("Rest request to validate token and verify email");
+		userService.verifyEmailToken(tokenAndPasswordDTO);
 		return ResponseEntity.ok().body(
 				ResponseDto.builder()
 						.status("success")
