@@ -140,6 +140,12 @@ public class JwtAuthenticationController {
 		return ResponseEntity.ok(userService.save(userDTO));
 	}*/
 
+	/**
+	 * Sign up new user
+	 * @param createUserRequest
+	 * @param request
+	 * @return
+	 */
 	@ApiOperation(value = "Creates a user")
 	@PostMapping("/sign-up")
 	@ApiImplicitParams({
@@ -177,7 +183,8 @@ public class JwtAuthenticationController {
 
 	private void authenticate(String username, String password) throws Exception {
 		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password,
+					new ArrayList<>()));
 		} catch (DisabledException e) {
 			throw new Exception("USER_DISABLED", e);
 		} catch (BadCredentialsException e) {

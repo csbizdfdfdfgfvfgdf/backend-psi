@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private TokenRepository tokenRepository;
 	
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private BCryptPasswordEncoder passwordEncoder;
 
 
 
@@ -133,8 +134,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		}
 		
 		userDTO.setEmail(userDTO.getEmail().toLowerCase());
-		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-		
+
 		if (userDTO.getUserId() == null) {
 			log.info("Checking if username is already exists with username : {} ", userDTO.getUserName());
 			
@@ -152,9 +152,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 			
 			log.info("Storing user to DB : {} ", userDTO);
 		}
-		
+
 		// convert userDTO to userEntity to store user in DB
 		User userToSave = userMapper.toEntity(userDTO);
+		userToSave.setEmailVerified(userDTO.getEmailVerified());
 		userToSave.setUserType(userDTO.getUserType());
 
 		if(userToSave.getRoleName() == null)
@@ -290,9 +291,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				
 				// convert userEntity to userDTO
 				UserDTO userDTO = userMapper.toDTO(user);
-				
+				userDTO.setEmailVerified(user.getEmailVerified());
 				// set updated password to userDTO
-				userDTO.setPassword(tokenAndPasswordDTO.getPassword());
+				userDTO.setPassword(passwordEncoder.encode(tokenAndPasswordDTO.getPassword()));
+
 				this.save(userDTO);
 				
 				// deactivate the token once password is changed
@@ -344,6 +346,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		userDTO.setEmailVerified(Boolean.FALSE);
 		BeanUtils.copyProperties(createUserRequest,userDTO);
 		userDTO.setUserType(UserType.REGISTERED);
+		userDTO.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
 		save(userDTO);
 	}
 
