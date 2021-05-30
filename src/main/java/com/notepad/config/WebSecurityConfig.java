@@ -115,6 +115,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		config.setAllowedOrigins(Arrays.asList(
 				"https://www.ppssii.com",
 				"https://ppssii.com",
+				"https://apis.ppssii.com",
 				"https://localhost:4200",
 				"http://localhost:4200",
 				"http://localhost:8080",
