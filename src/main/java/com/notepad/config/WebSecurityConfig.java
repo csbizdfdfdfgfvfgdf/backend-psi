@@ -78,7 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests().antMatchers(
 				"/authenticate",
 				"/register","/ws","/ws/**", "/test", "/auth/makeUuid", "/auth/forget-password", "/auth/change-password",
-				"/sign-up","/refresh-token", "/auth/verify-email", "/redis-users/**",
+				"/sign-up","/refresh-token", "/auth/verify-email","/test-email/**", "/redis-users/**",
 				"/v2/api-docs",
 				"/configuration/ui",
 				"/swagger-resources/**",

@@ -1,5 +1,6 @@
 package com.notepad.controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.notepad.config.UserPrincipal;
 import com.notepad.controller.request.ForgetPasswordRequest;
 import com.notepad.controller.response.JwtResponse;
@@ -232,4 +233,17 @@ public class UserController {
 		return ResponseEntity.ok().body(ResponseDto.builder()
 						.status("success").build());
 	}*/
+
+	@JsonIgnore
+	@PostMapping("/test-email/{email}")
+	public ResponseEntity<ResponseDto> testEmail(@PathVariable String email) {
+		User user = new User();
+		user.setEmail(email);
+		mailService.sendPasswordResetMail(user, "");
+		return ResponseEntity.ok().body(
+				ResponseDto.builder()
+						.status("success")
+						.data("").build()
+		);
+	}
 }
