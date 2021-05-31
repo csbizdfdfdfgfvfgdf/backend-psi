@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -234,8 +235,11 @@ public class UserController {
 						.status("success").build());
 	}*/
 
-	@JsonIgnore
+	@ApiIgnore
+	@ApiOperation(value = "Test email is coming or not after passing email id")
 	@PostMapping("/test-email/{email}")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", required = false, paramType = "header", dataType = "String", allowEmptyValue = true, readOnly = true)})
 	public ResponseEntity<ResponseDto> testEmail(@PathVariable String email) {
 		User user = new User();
 		user.setEmail(email);
